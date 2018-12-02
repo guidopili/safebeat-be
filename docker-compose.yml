@@ -1,0 +1,32 @@
+version: '3.6'
+
+services:
+  nginx:
+    build: ./docker/nginx
+    image: guidopili/safebeat-be-nginx
+    volumes:
+      - .:/var/www/safebeat-be
+    ports:
+      - "80:80"
+    links:
+      - fpm:fpm
+
+  fpm:
+    image: guidopili/safebeat-be-php:latest
+    user: safebeat-dev
+    volumes:
+      - .:/var/www/safebeat-be
+    depends_on:
+      - mysql
+    ports:
+      - "9000:9000"
+      - "8090:8090"
+    links:
+      - mysql:mysql
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: djRmqSxxdppt8rHV

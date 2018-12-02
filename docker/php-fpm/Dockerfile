@@ -1,4 +1,4 @@
-FROM php:alpine
+FROM php:fpm-alpine
 
 ENV SYMFONY_DEPRECATIONS_HELPER "disabled"
 ENV SYMFONY_ENV="dev"
@@ -25,7 +25,7 @@ RUN git clone --depth 1 https://github.com/robbyrussell/oh-my-zsh /home/${USER_N
 
 COPY config/zshrc /home/${USER_NAME}/.zshrc
 
-WORKDIR /var/www/
+WORKDIR /var/www/safebeat-be
 
 USER root
 
