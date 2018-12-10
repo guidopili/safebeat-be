@@ -25,7 +25,34 @@ RUN git clone --depth 1 https://github.com/robbyrussell/oh-my-zsh /home/${USER_N
 
 COPY config/zshrc /home/${USER_NAME}/.zshrc
 
-WORKDIR /var/www/safebeat-be
-
 USER root
 
+RUN apk add --no-cache --virtual build-dependencies \
+    bzip2-dev \
+    autoconf \
+    libbz2 \
+    libxslt \
+    g++ \
+    make \
+    pcre-dev \
+    openssl-dev \
+    zlib-dev \
+    bzip2-dev \
+    libxml2-dev \
+    libpng-dev \
+    gettext-dev \
+    gmp-dev \
+    icu-dev \
+    tidyhtml-dev \
+    libzip-dev \
+    libxslt-dev \
+    fontconfig-dev \
+    freetype-dev
+
+RUN docker-php-ext-install -j5 sockets pdo_mysql zip intl opcache pcntl
+RUN apk del build-dependencies \
+    && docker-php-source delete \
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/*
+
+WORKDIR /var/www/safebeat-be

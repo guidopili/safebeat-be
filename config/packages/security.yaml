@@ -1,0 +1,47 @@
+security:
+  encoders:
+    Safebeat\Entity\User:
+      algorithm:   argon2i
+      memory_cost: 16384
+      time_cost:   2
+      threads:     4
+
+  providers:
+    jwt:
+      entity:
+        class: Safebeat\Entity\User
+        property: username
+
+  firewalls:
+    login:
+      pattern:  ^/api/login
+      stateless: true
+      anonymous: true
+      json_login:
+        check_path:      login_check
+        require_previous_session: false
+        username_path: username
+        password_path: password
+        success_handler: lexik_jwt_authentication.handler.authentication_success
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        remember_me: false
+
+    register:
+      pattern:   ^/api/register
+      stateless: true
+      anonymous: true
+
+    api:
+      pattern:   ^/api
+      stateless: true
+      provider:  jwt
+      guard:
+        authenticators:
+          - lexik_jwt_authentication.jwt_token_authenticator
+
+    dev:
+        pattern:  ^/(_(profiler|wdt)|css|images|js)/
+        security: false
+
+    main:
+        anonymous: true
