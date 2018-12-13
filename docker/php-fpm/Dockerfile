@@ -6,9 +6,13 @@ ENV APP_ENV="dev"
 ENV USER_NAME="safebeat-dev"
 
 RUN apk --no-cache add \
-        sudo \
-        git \
-        zsh 
+    sudo \
+    git \
+    zsh \
+    curl \
+    libbz2 \
+    libxslt \
+    icu-libs
 
 RUN addgroup -g 1000 ${USER_NAME} \
     && addgroup sudo \
@@ -37,7 +41,6 @@ RUN apk add --no-cache --virtual build-dependencies \
     pcre-dev \
     openssl-dev \
     zlib-dev \
-    bzip2-dev \
     libxml2-dev \
     libpng-dev \
     gettext-dev \
