@@ -3,19 +3,19 @@ lexik_jwt_authentication:
     public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
     pass_phrase: '%env(JWT_PASSPHRASE)%'
 
-#    encoder:
-#      service: lexik_jwt_authentication.encoder.lcobucci
-#      crypto_engine:  openssl
-#      signature_algorithm: RS256
+    encoder:
+      service: lexik_jwt_authentication.encoder.lcobucci
+      crypto_engine:  openssl
+      signature_algorithm: RS256
 
     token_extractors:
-      authorization_header:      # look for a token as Authorization Header
+      authorization_header:
         enabled: true
         prefix: Bearer
         name: X-Jwt-Auth
-      cookie:                    # check token in a cookie
+      cookie:
         enabled: false
         name: BEARER
-      query_parameter:           # check token in query string parameter
+      query_parameter:
         enabled: true
         name: bearer

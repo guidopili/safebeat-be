@@ -24,12 +24,7 @@ class User implements UserInterface
     private $password;
     /**
      * @var string
-     * @ORM\Column(name="salt", nullable=false, type="string", length=20)
-     */
-    private $salt;
-    /**
-     * @var string
-     * @ORM\Column(name="username", nullable=false, type="string", length=50)
+     * @ORM\Column(name="username", nullable=false, type="string", length=50, unique=true)
      */
     private $username;
     /**
@@ -39,7 +34,7 @@ class User implements UserInterface
     private $roles;
     /**
      * @var string
-     * @ORM\Column(name="email", nullable=false, type="string")
+     * @ORM\Column(name="email", nullable=true, type="string")
      */
     private $email;
 
@@ -48,7 +43,6 @@ class User implements UserInterface
         $this->username = $username;
         $this->password = $password;
         $this->roles = ['role_admin'];
-        $this->salt = uniqid();
     }
 
     public function getRoles(): array
@@ -56,28 +50,14 @@ class User implements UserInterface
         return $this->roles;
     }
 
-    public function setPassword(string $password)
-    {
-        $this->password = $password;
-    }
-
     public function getPassword(): string
     {
         return $this->password;
     }
 
-    public function getSalt(): string
-    {
-        return $this->salt;
-    }
-
     public function getUsername(): string
     {
         return $this->username;
-    }
-
-    public function eraseCredentials()
-    {
     }
 
     public function getId()
@@ -90,7 +70,7 @@ class User implements UserInterface
         $this->id = $id;
     }
 
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -98,5 +78,13 @@ class User implements UserInterface
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    public function getSalt()
+    {
+    }
+
+    public function eraseCredentials()
+    {
     }
 }
