@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="refresh_token")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Safebeat\Repository\RefreshTokenRepository")
  */
 final class RefreshToken
 {
@@ -23,7 +23,7 @@ final class RefreshToken
     private $user;
     /**
      * @var string
-     * @ORM\Column(name="refresh_token", type="string", length=100)
+     * @ORM\Column(name="refresh_token", type="string")
      */
     private $refreshToken;
 

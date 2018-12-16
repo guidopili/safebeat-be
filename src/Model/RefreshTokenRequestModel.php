@@ -2,12 +2,38 @@
 
 namespace Safebeat\Model;
 
+use Safebeat\Exception\RefreshTokenException;
+use Symfony\Component\HttpFoundation\Request;
+
 class RefreshTokenRequestModel
 {
     private $device;
+    private $browser;
+    private $osVersion;
+
+    private function __construct(string $device, string $browser, string $osVersion)
+    {
+        $this->device = $device;
+        $this->browser = $browser;
+        $this->osVersion = $osVersion;
+    }
+
+    public static function buildFromRequest(Request $request): self
+    {
+        $device = $request->request->get('device');
+        $browser = $request->request->get('browser');
+        $osVersion = $request->request->get('osVersion');
+
+        if (count(array_filter([$device,$browser,$osVersion])) < 2) {
+            throw RefreshTokenException::notEnoughInfoDevice();
+        }
+
+        return new self($device ?? 'unknown',$browser ?? 'unknown',$osVersion ?? 'unknown');
+    }
+
 
     public function __toString()
     {
-        return bin2hex(random_bytes(30));
+        return base64_encode("data:{device:{$this->device};browser:{$this->browser};osVersion:{$this->osVersion}}");
     }
 }
