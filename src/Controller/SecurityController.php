@@ -29,7 +29,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/api/register", name="register", methods={"POST"})
+     * @Route("/register", name="register", methods={"POST"})
      */
     public function register(Request $request, EncoderFactoryInterface $encoder): JsonResponse
     {
@@ -45,7 +45,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/api/health", name="health", methods={"GET"})
+     * @Route("/health", name="health", methods={"GET"})
      */
     public function health(): JsonResponse
     {
@@ -59,7 +59,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/api/refresh-token", name="refresh_token", methods={"POST"})
+     * @Route("/refresh-token", name="refresh_token", methods={"POST"})
      */
     public function refreshToken(Request $request, RefreshTokenManager $refreshTokenManager): JsonResponse
     {
@@ -76,7 +76,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/api/new-token", name="new_token", methods={"POST"})
+     * @Route("/new-token", name="new_token", methods={"POST"})
      */
     public function newToken(
         Request $request,
