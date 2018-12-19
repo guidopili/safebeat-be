@@ -24,3 +24,7 @@ services:
     tags:
       - { name: doctrine.event_listener, event: preUpdate }
       - { name: doctrine.event_listener, event: prePersist }
+
+  Safebeat\Listener\RequestValidationListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.controller, method: log }
