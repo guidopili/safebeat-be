@@ -43,6 +43,23 @@ class RequestValidationListener
         $this->logger->info($el);
 
         $this->logger->info(sprintf("Replace %s with %s", $el, RequestBodyValidator::class));
-        $this->logger->info(str_replace("@$el", RequestBodyValidator::class, $docs));
+        $this->logger->info($r = str_replace("@$el", '@'.RequestBodyValidator::class, $docs));
+
+        $exploded = explode(PHP_EOL, $r);
+
+        $parsed = [];
+        foreach ($exploded as $item) {
+            if (1 === preg_match('/^\s*\*\s*\@/', $item)) {
+                $parsed[] = $item;
+
+                continue;
+            }
+        }
+
+        $exploded = array_filter($exploded, function(string $e) {return false !== strpos($e, RequestBodyValidator::class);});
+        $exploded = array_pop($exploded);
+        $exploded = preg_replace('/^\s*\*\s*\@/', '', $exploded);
+
+        $this->logger->info(print_r($exploded, true));
     }
 }

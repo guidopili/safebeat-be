@@ -4,7 +4,7 @@ namespace Safebeat\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Safebeat\Annotation;
-use Safebeat\Entity\Wallet;
+use Safebeat\Service\WalletManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,14 +26,9 @@ class WalletController extends AbstractController
      * @Route(name="create", methods={"POST"})
      * @Annotation\RequestBodyValidator()
      */
-    public function create(Request $request)
+    public function create(Request $request, WalletManager $walletManager)
     {
-        $wallet = new Wallet();
-
-        $wallet->setTitle($request->request->get('title'));
-
-        $this->entityManager->persist($wallet);
-        $this->entityManager->flush();
+        $wallet = $walletManager->create($request->request->get('title'), $this->getUser());
 
         return JsonResponse::create(['wallet' => $wallet]);
     }

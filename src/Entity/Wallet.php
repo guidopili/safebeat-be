@@ -17,6 +17,22 @@ class Wallet extends BaseEntity implements \JsonSerializable
      * @ORM\Column(name="title", type="string", length=50, nullable=false)
      */
     private $title;
+    /**
+     * @var User
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
+     */
+    private $owner;
+
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(User $owner): void
+    {
+        $this->owner = $owner;
+    }
 
     public function getTitle(): string
     {
