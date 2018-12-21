@@ -12,7 +12,8 @@ RUN apk --no-cache add \
     curl \
     libbz2 \
     libxslt \
-    icu-libs
+    icu-libs \
+    libzip
 
 RUN addgroup -g 1000 ${USER_NAME} \
     && addgroup sudo \
