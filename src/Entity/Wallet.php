@@ -5,7 +5,7 @@ namespace Safebeat\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Safebeat\Repository\WalletRepository")
  * @ORM\Table("wallet")
  */
 class Wallet extends BaseEntity implements \JsonSerializable
@@ -14,15 +14,22 @@ class Wallet extends BaseEntity implements \JsonSerializable
 
     /**
      * @var string
-     * @ORM\Column(name="title", type="string", length=50, nullable=false)
+     * @ORM\Column(name="title", type="string", length=50, nullable=false, unique=true)
      */
     private $title;
+
     /**
      * @var User
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private $owner;
+
+    /**
+     * @var bool
+     * @ORM\Column(name="deleted", type="boolean", nullable=false, options={"default"=0})
+     */
+    private $deleted = false;
 
     public function getOwner(): User
     {
@@ -44,12 +51,13 @@ class Wallet extends BaseEntity implements \JsonSerializable
         $this->title = $title;
     }
 
-    public function jsonSerialize()
+    public function isDeleted(): bool
     {
-        return [
-            'id' => $this->id,
-            'createdAt' => $this->getCreatedAt(),
-            'updatedAt' => $this->getCreatedAt(),
-        ];
+        return $this->deleted ?? false;
+    }
+
+    public function setDeleted(bool $deleted): void
+    {
+        $this->deleted = $deleted;
     }
 }

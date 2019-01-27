@@ -71,4 +71,13 @@ class User extends BaseEntity implements UserInterface
     public function eraseCredentials()
     {
     }
+
+    public function jsonSerialize(): array
+    {
+        $ret = parent::jsonSerialize();
+
+        unset($ret['password']);
+
+        return $ret;
+    }
 }

@@ -24,7 +24,6 @@ class TimeStampableListener
         }
 
         $entity->setCreatedAt(new \DateTime());
-        $this->entityManager->flush();
     }
 
     public function preUpdate(LifecycleEventArgs $eventArgs)
@@ -36,7 +35,6 @@ class TimeStampableListener
         }
 
         $entity->setUpdatedAt(new \DateTime());
-        $this->entityManager->flush();
     }
 
     private function isTimestampable($entity): bool
