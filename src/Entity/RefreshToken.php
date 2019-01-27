@@ -8,14 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="refresh_token")
  * @ORM\Entity(repositoryClass="Safebeat\Repository\RefreshTokenRepository")
  */
-final class RefreshToken
+final class RefreshToken extends BaseEntity
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
     /**
      * @var User
      * @ORM\ManyToOne(targetEntity="User")
@@ -31,11 +25,6 @@ final class RefreshToken
     {
         $this->user = $user;
         $this->refreshToken = $refreshToken;
-    }
-
-    public function getId()
-    {
-        return $this->id;
     }
 
     public function getUser(): User

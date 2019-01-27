@@ -9,14 +9,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ORM\Table(name="user")
  * @ORM\Entity()
  */
-class User implements UserInterface
+class User extends BaseEntity implements UserInterface
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
     /**
      * @var string
      * @ORM\Column(name="password", nullable=false, type="string", length=100)
@@ -60,16 +54,6 @@ class User implements UserInterface
         return $this->username;
     }
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
@@ -86,5 +70,14 @@ class User implements UserInterface
 
     public function eraseCredentials()
     {
+    }
+
+    public function jsonSerialize(): array
+    {
+        $ret = parent::jsonSerialize();
+
+        unset($ret['password']);
+
+        return $ret;
     }
 }

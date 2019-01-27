@@ -1,21 +1,36 @@
 parameters:
 
 services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
+  _defaults:
+    autowire: true
+    autoconfigure: true
 
-    Safebeat\:
-        resource: '../src/*'
-        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+  Safebeat\:
+    resource: '../src/*'
+    exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
-    Safebeat\Controller\:
-        resource: '../src/Controller'
-        tags: ['controller.service_arguments']
+  Safebeat\Controller\:
+    resource: '../src/Controller'
+    tags: ['controller.service_arguments']
 
-    # Doctrine Repositories
-    Safebeat\Repository\RefreshTokenRepository:
-        class: Doctrine\ORM\EntityRepository
-        factory: ['@doctrine.orm.default_entity_manager', getRepository]
-        arguments:
-            - Safebeat\Entity\RefreshToken
+  # Doctrine Repositories
+  Safebeat\Repository\RefreshTokenRepository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+      - Safebeat\Entity\RefreshToken
+
+  Safebeat\Repository\WalletRepository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+      - Safebeat\Entity\Wallet
+
+  Safebeat\Listener\TimeStampableListener:
+    tags:
+      - { name: doctrine.event_listener, event: preUpdate }
+      - { name: doctrine.event_listener, event: prePersist }
+
+#  Safebeat\Listener\RequestValidationListener:
+#    tags:
+#      - { name: kernel.event_listener, event: kernel.controller, method: log }
