@@ -51,12 +51,7 @@ class WalletManager
             $wallet->setTitle($properties['title']);
         }
 
-        try {
-            $this->entityManager->flush();
-        }catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-            throw $e;
-        }
+        $this->entityManager->flush();
 
         $this->eventDispatcher->dispatch(WalletEvent::WALLET_UPDATED, new WalletEvent($wallet));
 
