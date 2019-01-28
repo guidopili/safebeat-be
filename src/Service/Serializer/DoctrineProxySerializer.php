@@ -5,11 +5,11 @@ namespace Safebeat\Service\Serializer;
 use Doctrine\ORM\Proxy\Proxy;
 use Safebeat\Entity\BaseEntity;
 
-class BaseEntitySerializer implements SerializeInterface
+class DoctrineProxySerializer implements SerializeInterface
 {
     public static function supports($object): bool
     {
-        return $object instanceof BaseEntity && false === strrpos(get_class($object), '\\'.Proxy::MARKER.'\\');;
+        return $object instanceof BaseEntity && false !== strrpos(get_class($object), '\\'.Proxy::MARKER.'\\');
     }
 
     public static function processValue($object)
@@ -18,6 +18,6 @@ class BaseEntitySerializer implements SerializeInterface
             throw new \LogicException('Call support first');
         }
 
-        return $object->jsonSerialize();
+        return ['id' => $object->getId(), 'isProxy' => true];
     }
 }

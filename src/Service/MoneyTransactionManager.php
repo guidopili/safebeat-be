@@ -6,8 +6,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Safebeat\Entity\Category;
 use Safebeat\Entity\MoneyTransaction;
 use Safebeat\Entity\User;
+use Safebeat\Entity\Wallet;
 use Safebeat\Event\MoneyTransactionEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MoneyTransactionManager
 {
@@ -20,7 +22,7 @@ class MoneyTransactionManager
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function create(User $owner, float $amount, string $description, ?Category $category): MoneyTransaction
+    public function create(User $owner, float $amount, string $description, ?Category $category, ?Wallet $wallet): MoneyTransaction
     {
         $transaction = new MoneyTransaction();
 
@@ -28,6 +30,7 @@ class MoneyTransactionManager
         $transaction->setOwner($owner);
         $transaction->setDescription($description);
         $transaction->setCategory($category);
+        $transaction->setWallet($wallet);
 
         $this->entityManager->persist($transaction);
         $this->entityManager->flush();
@@ -39,8 +42,24 @@ class MoneyTransactionManager
 
     public function update(MoneyTransaction $transaction, array $properties): MoneyTransaction
     {
-        if ($category = $this->entityManager->find(Category::class, $properties['category'] ?? 0)) {
+        if (array_key_exists('category', $properties)) {
+            $category = $this->entityManager->find(Category::class, $properties['category'] ?? 0);
+
+            if ($properties['category'] !== null && !$category instanceof Category) {
+                throw new NotFoundHttpException("Category {$properties['category']} not found!");
+            }
+
             $transaction->setCategory($category);
+        }
+
+        if (array_key_exists('wallet', $properties)) {
+            $wallet = $this->entityManager->find(Wallet::class, $properties['wallet'] ?? 0);
+
+            if ($properties['wallet'] !== null && !$wallet instanceof Wallet) {
+                throw new NotFoundHttpException("Wallet {$properties['wallet']} not found!");
+            }
+
+            $transaction->setWallet($wallet);
         }
 
         $transaction->setAmount($properties['amount'] ?? $transaction->getAmount());

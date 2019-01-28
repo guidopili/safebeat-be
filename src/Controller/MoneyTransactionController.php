@@ -28,9 +28,9 @@ class MoneyTransactionController extends AbstractController
     }
 
     /**
-     * @Route(pname="list", methods={"GET"})
+     * @Route(name="list", methods={"GET"})
      */
-    public function list(MoneyTransactionRepository $transactionRepository): JsonResponse
+    public function listTransactions(MoneyTransactionRepository $transactionRepository): JsonResponse
     {
         return JsonResponse::create(
             ['transactions' => $transactionRepository->getTransactionsByOwner($this->getUser())]
@@ -38,7 +38,7 @@ class MoneyTransactionController extends AbstractController
     }
 
     /**
-     * @Route(path="/{wallet}/list", name="list", methods={"GET"})
+     * @Route(path="/{wallet}/list", name="list_wallet", methods={"GET"})
      */
     public function listByWallet(Wallet $wallet, MoneyTransactionRepository $transactionRepository): JsonResponse
     {
@@ -61,6 +61,7 @@ class MoneyTransactionController extends AbstractController
         $amount = $request->request->get('amount');
         $description = $request->request->get('description');
         $categoryId = $request->request->get('category');
+        $walletId = $request->request->get('wallet');
 
         if (!is_numeric($amount)) {
             throw new BadRequestHttpException('Missing or not-well formed amount');
@@ -74,8 +75,12 @@ class MoneyTransactionController extends AbstractController
             $category = $this->entityManager->find(Category::class, $categoryId);
         }
 
+        if (is_numeric($walletId)) {
+            $wallet = $this->entityManager->find(Wallet::class, $walletId);
+        }
+
         $transaction = $transactionManager->create(
-            $this->getUser(), (float) $amount, $description, $category ?? null
+            $this->getUser(), (float) $amount, $description, $category ?? null, $wallet ?? null
         );
 
         return JsonResponse::create(['transaction' => $transaction], 201);

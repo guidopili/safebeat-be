@@ -29,7 +29,7 @@ class WalletController extends AbstractController
     /**
      * @Route(name="list", methods={"GET"})
      */
-    public function list(WalletRepository $walletRepository): JsonResponse
+    public function listWallets(WalletRepository $walletRepository): JsonResponse
     {
         return JsonResponse::create(['wallets' => $walletRepository->getWalletListByUser($this->getUser())]);
     }

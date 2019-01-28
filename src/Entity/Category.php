@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Category extends BaseEntity
 {
+    use TimeStampable;
+
     /**
      * @var string
      * @ORM\Column(name="name", type="string", length=25, nullable=false, unique=true)
@@ -19,7 +21,7 @@ class Category extends BaseEntity
     /**
      * @var User
      * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(nullable=false, onDelete="SET NULL")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      */
     private $owner;
 

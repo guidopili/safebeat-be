@@ -36,6 +36,10 @@ abstract class BaseEntity implements \JsonSerializable
                 }
             }
 
+            if ($propertyValue !== null && empty($propertyValue)) {
+                continue; // Avoid empty strings when object is fetched from db - Stupid Doctrine
+            }
+
             $ret[$property->getName()] = $propertyValue;
         }
 

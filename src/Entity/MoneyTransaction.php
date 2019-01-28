@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class MoneyTransaction extends BaseEntity
 {
+    use TimeStampable;
+
     /**
      * @var float
      * @ORM\Column(name="amount", type="float", nullable=false)
@@ -33,7 +35,7 @@ class MoneyTransaction extends BaseEntity
      */
     private $owner;
     /**
-     * @var Wallet
+     * @var Wallet | null
      * @ORM\ManyToOne(targetEntity="Wallet")
      * @ORM\JoinColumn(onDelete="SET NULL", nullable=true)
      */
@@ -84,12 +86,12 @@ class MoneyTransaction extends BaseEntity
         $this->owner = $owner;
     }
 
-    public function getWallet(): Wallet
+    public function getWallet(): ?Wallet
     {
         return $this->wallet;
     }
 
-    public function setWallet(Wallet $wallet): void
+    public function setWallet(?Wallet $wallet): void
     {
         $this->wallet = $wallet;
     }

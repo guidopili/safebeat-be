@@ -76,7 +76,11 @@ class User extends BaseEntity implements UserInterface
     {
         $ret = parent::jsonSerialize();
 
-        unset($ret['password']);
+        unset($ret['password'], $ret['roles']);
+
+        if (empty($ret['email'])) {
+            unset($ret['email']);
+        }
 
         return $ret;
     }
