@@ -26,6 +26,12 @@ services:
     arguments:
       - Safebeat\Entity\Wallet
 
+  Safebeat\Repository\MoneyTransactionRepository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+      - Safebeat\Entity\MoneyTransaction
+
   Safebeat\Listener\TimeStampableListener:
     tags:
       - { name: doctrine.event_listener, event: preUpdate }

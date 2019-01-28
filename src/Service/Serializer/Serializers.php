@@ -12,6 +12,7 @@ class Serializers
         return [
             DateTimeSerializer::class,
             BaseEntitySerializer::class,
+            DoctrineProxySerializer::class,
             NullSerializer::class,
         ];
     }

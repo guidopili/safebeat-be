@@ -36,27 +36,17 @@ class WalletManager
 
     public function update(Wallet $wallet, array $properties): Wallet
     {
-        if (isset($properties['owner'])) {
-            $newOwner =
-                $properties['owner'] instanceof User
-                    ? $properties['owner']
-                    : $this->entityManager->find(User::class, $properties['owner']);
+        if (array_key_exists('owner', $properties)) {
+            $newOwner = $this->entityManager->find(User::class, $properties['owner'] ?? 0);
 
-            if ($newOwner instanceof User) {
+            if ($newOwner instanceof User || $properties['owner'] === null) {
                 $wallet->setOwner($newOwner);
             }
         }
 
-        if (isset($properties['title'])) {
-            $wallet->setTitle($properties['title']);
-        }
+        $wallet->setTitle($properties['title'] ?? $wallet->getTitle());
 
-        try {
-            $this->entityManager->flush();
-        }catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-            throw $e;
-        }
+        $this->entityManager->flush();
 
         $this->eventDispatcher->dispatch(WalletEvent::WALLET_UPDATED, new WalletEvent($wallet));
 
