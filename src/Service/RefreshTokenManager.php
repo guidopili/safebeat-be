@@ -26,4 +26,13 @@ class RefreshTokenManager
 
         return $token;
     }
+
+    public function purgeTokens(User $user, RefreshTokenRequestModel $tokenRequestModel): void
+    {
+        $statement = $this->entityManager->getConnection()->prepare(
+            "DELETE FROM refresh_token WHERE user_id = ? AND refresh_token LIKE ?"
+        );
+
+        $statement->execute([$user->getId(), '%'.$tokenRequestModel->__toString()]);
+    }
 }

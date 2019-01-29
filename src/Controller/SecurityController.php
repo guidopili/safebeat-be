@@ -63,12 +63,22 @@ class SecurityController extends AbstractController
      */
     public function refreshToken(Request $request, RefreshTokenManager $refreshTokenManager): JsonResponse
     {
+        $this->entityManager->beginTransaction();
         try {
+            $tokenRequestModel = RefreshTokenRequestModel::buildFromRequest($request);
+            $user = $this->getUser();
+
+            $refreshTokenManager->purgeTokens($user, $tokenRequestModel);
+
             $refreshToken = $refreshTokenManager->create(
-                $this->getUser(),
-                RefreshTokenRequestModel::buildFromRequest($request)
+                $user,
+                $tokenRequestModel
             );
+
+            $this->entityManager->commit();
         } catch (\Exception $e) {
+            $this->entityManager->rollback();
+
             throw new BadRequestHttpException($e->getMessage());
         }
 
