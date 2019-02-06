@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Safebeat\Controller;
+namespace Safebeat\Controller\CRUD;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Safebeat\Annotation;
+use Safebeat\Entity\User;
 use Safebeat\Entity\Wallet;
 use Safebeat\Repository\WalletRepository;
 use Safebeat\Service\WalletManager;
@@ -76,8 +77,68 @@ class WalletController extends AbstractController
      */
     public function update(Request $request, Wallet $wallet, WalletManager $walletManager): JsonResponse
     {
+        if ($wallet->getOwner() !== $this->getUser()) {
+            throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
+        }
+
         $updatedWallet = $walletManager->update($wallet, $request->request->all());
 
         return JsonResponse::create(['wallet' => $updatedWallet]);
+    }
+
+    /**
+     * @Route(path="/invite-to/{wallet}", name="invite_to_wallet", methods={"POST"})
+     */
+    public function inviteToWallet(Request $request, Wallet $wallet): JsonResponse
+    {
+        if ($wallet->getOwner() !== $this->getUser()) {
+            throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
+        }
+
+        $userIds = $request->request->get('users', []);
+
+        $addedUsers = [];
+        foreach ($userIds as $userId) {
+            $user = $this->entityManager->getRepository(User::class)->find($userId);
+
+            if (!$user instanceof User) {
+                continue;
+            }
+
+            $wallet->addInvitedUser($user);
+            $addedUsers[] = $user->getUsername();
+        }
+
+        $this->entityManager->flush();
+
+        return JsonResponse::create(['added' => count($addedUsers), 'addedUsers' => $addedUsers]);
+    }
+
+    /**
+     * @Route(path="/invite-to/{wallet}", name="remove_from_wallet", methods={"DELETE"})
+     */
+    public function removeFromWallet(Request $request, Wallet $wallet): JsonResponse
+    {
+        if ($wallet->getOwner() !== $this->getUser()) {
+            throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
+        }
+
+        $userIds = $request->request->get('users', []);
+
+        $removedUsers = [];
+        foreach ($userIds as $userId) {
+            $user = $this->entityManager->getRepository(User::class)->find($userId);
+
+            if (!$user instanceof User) {
+                continue;
+            }
+
+            $wallet->removeInvitedUser($user);
+            $removedUsers[] = $user->getUsername();
+        }
+
+        $this->entityManager->flush();
+
+        return JsonResponse::create(['removed' => count($removedUsers), 'removedUsers' => $removedUsers]);
     }
 }

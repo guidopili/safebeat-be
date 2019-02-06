@@ -10,6 +10,7 @@ class Serializers
     public static function getSerializers(): array
     {
         return [
+            CollectionSerializer::class,
             DateTimeSerializer::class,
             BaseEntitySerializer::class,
             DoctrineProxySerializer::class,

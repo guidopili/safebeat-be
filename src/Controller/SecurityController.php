@@ -4,6 +4,7 @@ namespace Safebeat\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\PreAuthenticationJWTUserToken;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWSProvider\JWSProviderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\TokenExtractorInterface;
 use Safebeat\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -90,6 +91,7 @@ class SecurityController extends AbstractController
      */
     public function newToken(
         Request $request,
+        JWSProviderInterface $encoder,
         JWTTokenManagerInterface $tokenManager,
         RefreshTokenRepository $tokenRepository,
         TokenExtractorInterface $tokenExtractor,
@@ -104,7 +106,11 @@ class SecurityController extends AbstractController
             throw new BadRequestHttpException('Missing "X-Jwt-Auth" header');
         }
 
-        $decodedToken = $tokenManager->decode(new PreAuthenticationJWTUserToken($token));
+        try {
+            $decodedToken = $encoder->load(new PreAuthenticationJWTUserToken($token))->getPayload();
+        } catch (\Throwable $e) {
+            throw new BadRequestHttpException('Invalid "X-Jwt-Auth" header');
+        }
 
         if (!is_array($decodedToken) || !array_key_exists('username', $decodedToken)) {
             throw new BadRequestHttpException('Invalid "X-Jwt-Auth" header');

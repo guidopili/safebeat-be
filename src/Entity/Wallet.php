@@ -2,6 +2,7 @@
 
 namespace Safebeat\Entity;
 
+use Doctrine\Common\Collections\{ArrayCollection,Collection};
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -29,7 +30,27 @@ class Wallet extends BaseEntity implements \JsonSerializable
      * @var bool
      * @ORM\Column(name="deleted", type="boolean", nullable=false, options={"default"=0})
      */
-    private $deleted = false;
+    private $deleted;
+
+    /**
+     * @var Collection
+     * @ORM\ManyToMany(targetEntity="User", fetch="EXTRA_LAZY")
+     * @ORM\JoinTable(name="wallet_invited_user",
+     *   joinColumns={
+     *     @ORM\JoinColumn(name="wallet_id", referencedColumnName="id", onDelete="CASCADE")
+     *   },
+     *   inverseJoinColumns={
+     *     @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
+     *   }
+     * )
+     */
+    private $invitedUsers;
+
+    public function __construct()
+    {
+        $this->invitedUsers = new ArrayCollection();
+        $this->deleted = false;
+    }
 
     public function getOwner(): User
     {
@@ -59,5 +80,25 @@ class Wallet extends BaseEntity implements \JsonSerializable
     public function setDeleted(bool $deleted): void
     {
         $this->deleted = $deleted;
+    }
+
+    public function getInvitedUsers(): Collection
+    {
+        return $this->invitedUsers;
+    }
+
+    public function setInvitedUsers(Collection $invitedUsers): void
+    {
+        $this->invitedUsers = $invitedUsers;
+    }
+
+    public function addInvitedUser(User $user): void
+    {
+        $this->invitedUsers->add($user);
+    }
+
+    public function removeInvitedUser(User $user): void
+    {
+        $this->invitedUsers->removeElement($user);
     }
 }

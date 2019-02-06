@@ -31,6 +31,16 @@ class User extends BaseEntity implements UserInterface
      * @ORM\Column(name="email", nullable=true, type="string")
      */
     private $email;
+    /**
+     * @var string | null
+     * @ORM\Column(name="first_name", nullable=true, type="string", length=50)
+     */
+    private $firstName;
+    /**
+     * @var string | null
+     * @ORM\Column(name="last_name", nullable=true, type="string", length=50)
+     */
+    private $lastName;
 
     public function __construct(string $username, string $password)
     {
@@ -62,6 +72,26 @@ class User extends BaseEntity implements UserInterface
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): void
+    {
+        $this->lastName = $lastName;
     }
 
     public function getSalt()

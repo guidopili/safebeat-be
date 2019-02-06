@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Safebeat\Controller;
+namespace Safebeat\Controller\CRUD;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Safebeat\Entity\Category;
@@ -79,6 +79,8 @@ class MoneyTransactionController extends AbstractController
             $wallet = $this->entityManager->find(Wallet::class, $walletId);
         }
 
+        // Add check to see if user is authorized to add transaction
+
         $transaction = $transactionManager->create(
             $this->getUser(), (float) $amount, $description, $category ?? null, $wallet ?? null
         );
@@ -103,6 +105,10 @@ class MoneyTransactionController extends AbstractController
      */
     public function update(Request $request, MoneyTransaction $transaction, MoneyTransactionManager $transactionManager): JsonResponse
     {
+        if ($transaction->getOwner() !== $this->getUser()) {
+            throw new AccessDeniedHttpException('This transaction doesn\'t belong to you!');
+        }
+
         $updatedTransaction = $transactionManager->update($transaction, $request->request->all());
 
         return JsonResponse::create(['transaction' => $updatedTransaction]);
