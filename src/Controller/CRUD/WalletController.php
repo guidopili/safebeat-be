@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Mercure\Publisher;
+use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -89,7 +91,7 @@ class WalletController extends AbstractController
     /**
      * @Route(path="/invite-to/{wallet}", name="invite_to_wallet", methods={"POST"})
      */
-    public function inviteToWallet(Request $request, Wallet $wallet): JsonResponse
+    public function inviteToWallet(Request $request, Wallet $wallet, Publisher $publisher): JsonResponse
     {
         if ($wallet->getOwner() !== $this->getUser()) {
             throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
@@ -106,6 +108,18 @@ class WalletController extends AbstractController
             }
 
             $wallet->addInvitedUser($user);
+
+            // Dispatch event ?
+
+            $publisher(
+                new Update(
+                    "http://safebeat/user/2",
+                    json_encode([
+                        'message' => "You have been invited to {$wallet->getTitle()}!"
+                    ])
+                )
+            );
+
             $addedUsers[] = $user->getUsername();
         }
 

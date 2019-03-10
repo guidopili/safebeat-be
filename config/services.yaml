@@ -1,4 +1,6 @@
 parameters:
+    env(MERCURE_PUBLISH_URL): ''
+    env(MERCURE_JWT_SECRET): ''
 
 services:
   _defaults:
