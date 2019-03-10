@@ -22,10 +22,9 @@ abstract class BaseEntity implements \JsonSerializable
     public function jsonSerialize(): array
     {
         $ref = new \ReflectionObject($this);
-        $properties = $ref->getProperties();
 
         $ret = [];
-        foreach ($properties as $property) {
+        foreach ($ref->getProperties() as $property) {
             $property->setAccessible(true);
 
             $propertyValue = $property->getValue($this);
