@@ -13,8 +13,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Mercure\Publisher;
-use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -91,47 +89,32 @@ class WalletController extends AbstractController
     /**
      * @Route(path="/invite-to/{wallet}", name="invite_to_wallet", methods={"POST"})
      */
-    public function inviteToWallet(Request $request, Wallet $wallet, Publisher $publisher): JsonResponse
+    public function inviteToWallet(Request $request, Wallet $wallet, WalletManager $walletManager): JsonResponse
     {
         if ($wallet->getOwner() !== $this->getUser()) {
             throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
         }
 
-        $userIds = $request->request->get('users', []);
-
-        $addedUsers = [];
-        foreach ($userIds as $userId) {
+        $invitedUsers = [];
+        foreach ($request->request->get('users', []) as $userId) {
             $user = $this->entityManager->getRepository(User::class)->find($userId);
 
             if (!$user instanceof User) {
                 continue;
             }
 
-            $wallet->addInvitedUser($user);
-
-            // Dispatch event ?
-
-            $publisher(
-                new Update(
-                    "http://safebeat/user/2",
-                    json_encode([
-                        'message' => "You have been invited to {$wallet->getTitle()}!"
-                    ])
-                )
-            );
-
-            $addedUsers[] = $user->getUsername();
+            if (true === $walletManager->inviteUsers($wallet, $user)) {
+                $invitedUsers[] = $user->getUsername();
+            }
         }
 
-        $this->entityManager->flush();
-
-        return JsonResponse::create(['added' => count($addedUsers), 'addedUsers' => $addedUsers]);
+        return JsonResponse::create(['invited' => count($invitedUsers), 'invitedUsers' => $invitedUsers]);
     }
 
     /**
      * @Route(path="/invite-to/{wallet}", name="remove_from_wallet", methods={"DELETE"})
      */
-    public function removeFromWallet(Request $request, Wallet $wallet): JsonResponse
+    public function removeFromWallet(Request $request, Wallet $wallet, WalletManager $walletManager): JsonResponse
     {
         if ($wallet->getOwner() !== $this->getUser()) {
             throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
@@ -147,8 +130,10 @@ class WalletController extends AbstractController
                 continue;
             }
 
-            $wallet->removeInvitedUser($user);
-            $removedUsers[] = $user->getUsername();
+            // TODO move this to manager
+            if ($wallet->removeInvitedUser($user)) {
+                $removedUsers[] = $user->getUsername();
+            }
         }
 
         $this->entityManager->flush();

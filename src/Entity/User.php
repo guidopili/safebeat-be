@@ -74,6 +74,15 @@ class User extends BaseEntity implements UserInterface
         $this->email = $email;
     }
 
+    public function getFullName(): string
+    {
+        if (empty($this->firstName) || empty($this->lastName)) {
+            return $this->username;
+        }
+
+        return "$this->firstName $this->lastName";
+    }
+
     public function getFirstName(): ?string
     {
         return $this->firstName;

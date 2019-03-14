@@ -28,6 +28,12 @@ services:
     arguments:
       - Safebeat\Entity\Wallet
 
+  Safebeat\Repository\WalletPendingInvitationRepository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+      - Safebeat\Entity\WalletPendingInvitation
+
   Safebeat\Repository\MoneyTransactionRepository:
     class: Doctrine\ORM\EntityRepository
     factory: ['@doctrine.orm.default_entity_manager', getRepository]
@@ -38,6 +44,10 @@ services:
     tags:
       - { name: doctrine.event_listener, event: preUpdate }
       - { name: doctrine.event_listener, event: prePersist }
+
+  Safebeat\Listener\WalletListener:
+    tags:
+      - { name: kernel.event_listener, event: wallet.invited_user, method: onWalletInvitedUser }
 
 #  Safebeat\Listener\RequestValidationListener:
 #    tags:
