@@ -123,4 +123,9 @@ class User extends BaseEntity implements UserInterface
 
         return $ret;
     }
+
+    public function __toString(): string
+    {
+        return $this->getFullName();
+    }
 }

@@ -48,6 +48,7 @@ services:
   Safebeat\Listener\WalletListener:
     tags:
       - { name: kernel.event_listener, event: wallet.invited_user, method: onWalletInvitedUser }
+      - { name: kernel.event_listener, event: wallet.removed_user, method: onWalletRemovedUser }
 
 #  Safebeat\Listener\RequestValidationListener:
 #    tags:

@@ -12,25 +12,25 @@ class Notification extends BaseEntity
 {
     /**
      * @var boolean
-     * @ORM\Column(name="n_read", type="boolean", nullable=false)
+     * @ORM\Column(name="is_read", type="boolean", nullable=false)
      */
     private $read;
 
     /**
      * @var string
-     * @ORM\Column(name="n_content", type="string", nullable=false)
+     * @ORM\Column(name="content", type="string", nullable=false)
      */
     private $content;
 
     /**
      * @var string
-     * @ORM\Column(name="n_title", type="string", nullable=false)
+     * @ORM\Column(name="title", type="string", nullable=false)
      */
     private $title;
 
     /**
      * @var array
-     * @ORM\Column(name="n_links", type="json", nullable=false)
+     * @ORM\Column(name="links", type="json", nullable=false)
      */
     private $links;
 
@@ -80,8 +80,8 @@ class Notification extends BaseEntity
         $this->links = $links;
     }
 
-    public function addLink(string $link): void
+    public function addLink(string $link, string $category): void
     {
-        $this->links[] = $link;
+        $this->links[$category] = $link;
     }
 }

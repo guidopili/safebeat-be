@@ -1,18 +1,22 @@
 <?php declare(strict_types=1);
 
-namespace Safebeat\Controller\CRUD;
+namespace Safebeat\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Safebeat\Annotation;
 use Safebeat\Entity\User;
 use Safebeat\Entity\Wallet;
+use Safebeat\Entity\WalletPendingInvitation;
+use Safebeat\Event\WalletEvent;
 use Safebeat\Repository\WalletRepository;
 use Safebeat\Service\WalletManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -112,6 +116,79 @@ class WalletController extends AbstractController
     }
 
     /**
+     * @Route(path="/invite-to/{wallet}/accept", name="accept_invitation", methods={"POST"})
+     */
+    public function acceptInvitation(Wallet $wallet, EventDispatcherInterface $eventDispatcher)
+    {
+        $user = $this->getUser();
+        $pendingInvitation = $this
+            ->entityManager
+            ->getRepository(WalletPendingInvitation::class)
+            ->findOneBy(['user' => $user, 'wallet' => $wallet]);
+
+        if (!$pendingInvitation instanceof WalletPendingInvitation) {
+            throw new PreconditionFailedHttpException("You were not invited to {$wallet}");
+        }
+
+        $this->entityManager->beginTransaction();
+        try {
+            $wallet->addInvitedUser($user);
+            $this->entityManager->remove($pendingInvitation);
+            $this->entityManager->flush();
+
+            $eventDispatcher->dispatch(
+                WalletEvent::WALLETD_INVITATION_ACCEPTED,
+                new WalletEvent($wallet)
+            );
+
+            $this->entityManager->commit();
+        } catch (\Throwable $e) {
+            $this->entityManager->rollback();
+            $this->entityManager->close();
+
+            throw $e;
+        }
+
+        return JsonResponse::create(['success' => true]);
+    }
+
+    /**
+     * @Route(path="/invite-to/{wallet}/decline", name="decline_invitation", methods={"POST"})
+     */
+    public function declineInvitation(Wallet $wallet, EventDispatcherInterface $eventDispatcher)
+    {
+        $user = $this->getUser();
+        $pendingInvitation = $this
+            ->entityManager
+            ->getRepository(WalletPendingInvitation::class)
+            ->findOneBy(['user' => $user, 'wallet' => $wallet]);
+
+        if (!$pendingInvitation instanceof WalletPendingInvitation) {
+            throw new PreconditionFailedHttpException("You were not invited to {$wallet}");
+        }
+
+        $this->entityManager->beginTransaction();
+        try {
+            $this->entityManager->remove($pendingInvitation);
+            $this->entityManager->flush();
+
+            $eventDispatcher->dispatch(
+                WalletEvent::WALLETD_INVITATION_ACCEPTED,
+                new WalletEvent($wallet)
+            );
+
+            $this->entityManager->commit();
+        } catch (\Throwable $e) {
+            $this->entityManager->rollback();
+            $this->entityManager->close();
+
+            throw $e;
+        }
+
+        return JsonResponse::create(['success' => true]);
+    }
+
+    /**
      * @Route(path="/invite-to/{wallet}", name="remove_from_wallet", methods={"DELETE"})
      */
     public function removeFromWallet(Request $request, Wallet $wallet, WalletManager $walletManager): JsonResponse
@@ -130,8 +207,7 @@ class WalletController extends AbstractController
                 continue;
             }
 
-            // TODO move this to manager
-            if ($wallet->removeInvitedUser($user)) {
+            if (true === $walletManager->removeInvitedUser($wallet, $user)) {
                 $removedUsers[] = $user->getUsername();
             }
         }

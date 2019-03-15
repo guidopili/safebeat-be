@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Safebeat\Controller\CRUD;
+namespace Safebeat\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Safebeat\Entity\Category;
