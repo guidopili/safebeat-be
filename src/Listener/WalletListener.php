@@ -37,6 +37,7 @@ class WalletListener
 
         $notification->setTitle('New invitation to wallet');
         $notification->setContent("You were invited to $wallet by {$wallet->getOwner()}");
+        $notification->setTargetUser($user);
 
         $notification->addLink(
             $this->router->generate('wallet_accept_invitation', ['wallet' => $wallet->getId()]),
@@ -67,6 +68,7 @@ class WalletListener
 
         $notification->setTitle($event->getArgument('notificationTitle'));
         $notification->setContent($event->getArgument('notificationContent'));
+        $notification->setTargetUser($user);
 
         $this->notificationService->sendNotificationToUser($user, $notification);
     }

@@ -46,7 +46,7 @@ class User extends BaseEntity implements UserInterface
     {
         $this->username = $username;
         $this->password = $password;
-        $this->roles = ['role_admin'];
+        $this->roles = ['role_user'];
     }
 
     public function getRoles(): array

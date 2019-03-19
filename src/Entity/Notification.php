@@ -5,7 +5,7 @@ namespace Safebeat\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Safebeat\Repository\NotificationRepository")
  * @ORM\Table("notification")
  */
 class Notification extends BaseEntity
@@ -33,6 +33,13 @@ class Notification extends BaseEntity
      * @ORM\Column(name="links", type="json", nullable=false)
      */
     private $links;
+
+    /**
+     * @var User
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    private $targetUser;
 
     public function __construct()
     {
@@ -83,5 +90,15 @@ class Notification extends BaseEntity
     public function addLink(string $link, string $category): void
     {
         $this->links[$category] = $link;
+    }
+
+    public function getTargetUser(): User
+    {
+        return $this->targetUser;
+    }
+
+    public function setTargetUser(User $targetUser): void
+    {
+        $this->targetUser = $targetUser;
     }
 }
