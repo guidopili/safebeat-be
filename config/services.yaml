@@ -1,4 +1,6 @@
 parameters:
+    env(MERCURE_PUBLISH_URL): ''
+    env(MERCURE_JWT_SECRET): ''
 
 services:
   _defaults:
@@ -26,16 +28,33 @@ services:
     arguments:
       - Safebeat\Entity\Wallet
 
+  Safebeat\Repository\WalletPendingInvitationRepository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+      - Safebeat\Entity\WalletPendingInvitation
+
   Safebeat\Repository\MoneyTransactionRepository:
     class: Doctrine\ORM\EntityRepository
     factory: ['@doctrine.orm.default_entity_manager', getRepository]
     arguments:
       - Safebeat\Entity\MoneyTransaction
 
+  Safebeat\Repository\NotificationRepository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+      - Safebeat\Entity\Notification
+
   Safebeat\Listener\TimeStampableListener:
     tags:
       - { name: doctrine.event_listener, event: preUpdate }
       - { name: doctrine.event_listener, event: prePersist }
+
+  Safebeat\Listener\WalletListener:
+    tags:
+      - { name: kernel.event_listener, event: wallet.invited_user, method: onWalletInvitedUser }
+      - { name: kernel.event_listener, event: wallet.removed_user, method: onWalletRemovedUser }
 
 #  Safebeat\Listener\RequestValidationListener:
 #    tags:

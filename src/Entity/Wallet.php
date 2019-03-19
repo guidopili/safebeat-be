@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="Safebeat\Repository\WalletRepository")
  * @ORM\Table("wallet")
  */
-class Wallet extends BaseEntity implements \JsonSerializable
+class Wallet extends BaseEntity
 {
     use TimeStampable;
 
@@ -97,8 +97,13 @@ class Wallet extends BaseEntity implements \JsonSerializable
         $this->invitedUsers->add($user);
     }
 
-    public function removeInvitedUser(User $user): void
+    public function removeInvitedUser(User $user): bool
     {
-        $this->invitedUsers->removeElement($user);
+        return $this->invitedUsers->removeElement($user);
+    }
+
+    public function __toString(): string
+    {
+        return $this->getTitle();
     }
 }

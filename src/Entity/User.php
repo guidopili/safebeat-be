@@ -46,7 +46,7 @@ class User extends BaseEntity implements UserInterface
     {
         $this->username = $username;
         $this->password = $password;
-        $this->roles = ['role_admin'];
+        $this->roles = ['role_user'];
     }
 
     public function getRoles(): array
@@ -72,6 +72,15 @@ class User extends BaseEntity implements UserInterface
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    public function getFullName(): string
+    {
+        if (empty($this->firstName) || empty($this->lastName)) {
+            return $this->username;
+        }
+
+        return "$this->firstName $this->lastName";
     }
 
     public function getFirstName(): ?string
@@ -113,5 +122,10 @@ class User extends BaseEntity implements UserInterface
         }
 
         return $ret;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getFullName();
     }
 }

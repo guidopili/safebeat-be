@@ -1,18 +1,22 @@
 <?php declare(strict_types=1);
 
-namespace Safebeat\Controller\CRUD;
+namespace Safebeat\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Safebeat\Annotation;
 use Safebeat\Entity\User;
 use Safebeat\Entity\Wallet;
+use Safebeat\Entity\WalletPendingInvitation;
+use Safebeat\Event\WalletEvent;
 use Safebeat\Repository\WalletRepository;
 use Safebeat\Service\WalletManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -89,35 +93,105 @@ class WalletController extends AbstractController
     /**
      * @Route(path="/invite-to/{wallet}", name="invite_to_wallet", methods={"POST"})
      */
-    public function inviteToWallet(Request $request, Wallet $wallet): JsonResponse
+    public function inviteToWallet(Request $request, Wallet $wallet, WalletManager $walletManager): JsonResponse
     {
         if ($wallet->getOwner() !== $this->getUser()) {
             throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
         }
 
-        $userIds = $request->request->get('users', []);
-
-        $addedUsers = [];
-        foreach ($userIds as $userId) {
+        $invitedUsers = [];
+        foreach ($request->request->get('users', []) as $userId) {
             $user = $this->entityManager->getRepository(User::class)->find($userId);
 
             if (!$user instanceof User) {
                 continue;
             }
 
-            $wallet->addInvitedUser($user);
-            $addedUsers[] = $user->getUsername();
+            if (true === $walletManager->inviteUsers($wallet, $user)) {
+                $invitedUsers[] = $user->getUsername();
+            }
         }
 
-        $this->entityManager->flush();
+        return JsonResponse::create(['invited' => count($invitedUsers), 'invitedUsers' => $invitedUsers]);
+    }
 
-        return JsonResponse::create(['added' => count($addedUsers), 'addedUsers' => $addedUsers]);
+    /**
+     * @Route(path="/invite-to/{wallet}/accept", name="accept_invitation", methods={"POST"})
+     */
+    public function acceptInvitation(Wallet $wallet, EventDispatcherInterface $eventDispatcher)
+    {
+        $user = $this->getUser();
+        $pendingInvitation = $this
+            ->entityManager
+            ->getRepository(WalletPendingInvitation::class)
+            ->findOneBy(['user' => $user, 'wallet' => $wallet]);
+
+        if (!$pendingInvitation instanceof WalletPendingInvitation) {
+            throw new PreconditionFailedHttpException("You were not invited to {$wallet}");
+        }
+
+        $this->entityManager->beginTransaction();
+        try {
+            $wallet->addInvitedUser($user);
+            $this->entityManager->remove($pendingInvitation);
+            $this->entityManager->flush();
+
+            $eventDispatcher->dispatch(
+                WalletEvent::WALLETD_INVITATION_ACCEPTED,
+                new WalletEvent($wallet)
+            );
+
+            $this->entityManager->commit();
+        } catch (\Throwable $e) {
+            $this->entityManager->rollback();
+            $this->entityManager->close();
+
+            throw $e;
+        }
+
+        return JsonResponse::create(['success' => true]);
+    }
+
+    /**
+     * @Route(path="/invite-to/{wallet}/decline", name="decline_invitation", methods={"POST"})
+     */
+    public function declineInvitation(Wallet $wallet, EventDispatcherInterface $eventDispatcher)
+    {
+        $user = $this->getUser();
+        $pendingInvitation = $this
+            ->entityManager
+            ->getRepository(WalletPendingInvitation::class)
+            ->findOneBy(['user' => $user, 'wallet' => $wallet]);
+
+        if (!$pendingInvitation instanceof WalletPendingInvitation) {
+            throw new PreconditionFailedHttpException("You were not invited to {$wallet}");
+        }
+
+        $this->entityManager->beginTransaction();
+        try {
+            $this->entityManager->remove($pendingInvitation);
+            $this->entityManager->flush();
+
+            $eventDispatcher->dispatch(
+                WalletEvent::WALLETD_INVITATION_ACCEPTED,
+                new WalletEvent($wallet)
+            );
+
+            $this->entityManager->commit();
+        } catch (\Throwable $e) {
+            $this->entityManager->rollback();
+            $this->entityManager->close();
+
+            throw $e;
+        }
+
+        return JsonResponse::create(['success' => true]);
     }
 
     /**
      * @Route(path="/invite-to/{wallet}", name="remove_from_wallet", methods={"DELETE"})
      */
-    public function removeFromWallet(Request $request, Wallet $wallet): JsonResponse
+    public function removeFromWallet(Request $request, Wallet $wallet, WalletManager $walletManager): JsonResponse
     {
         if ($wallet->getOwner() !== $this->getUser()) {
             throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
@@ -133,8 +207,9 @@ class WalletController extends AbstractController
                 continue;
             }
 
-            $wallet->removeInvitedUser($user);
-            $removedUsers[] = $user->getUsername();
+            if (true === $walletManager->removeInvitedUser($wallet, $user)) {
+                $removedUsers[] = $user->getUsername();
+            }
         }
 
         $this->entityManager->flush();

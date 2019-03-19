@@ -197,6 +197,18 @@
     "symfony/inflector": {
         "version": "v4.2.0"
     },
+    "symfony/mercure": {
+        "version": "v0.1.0"
+    },
+    "symfony/mercure-bundle": {
+        "version": "0.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "0.1",
+            "ref": "c78ab1f56e700004fc5cd675c26b3c1c26be281d"
+        }
+    },
     "symfony/monolog-bridge": {
         "version": "v4.2.1"
     },

@@ -5,6 +5,7 @@
     "php": "^7.3",
     "ext-ctype": "*",
     "ext-iconv": "*",
+    "ext-json": "*",
     "friendsofsymfony/rest-bundle": "^2.4",
     "lexik/jwt-authentication-bundle": "^2.6",
     "nelmio/cors-bundle": "^1.5",
@@ -14,11 +15,11 @@
     "symfony/event-dispatcher": "4.2.*",
     "symfony/flex": "^1.1",
     "symfony/framework-bundle": "4.2.*",
+    "symfony/mercure-bundle": "^0.1.1",
     "symfony/monolog-bundle": "^3.3",
     "symfony/orm-pack": "^1.0",
     "symfony/serializer": "4.2.*",
-    "symfony/yaml": "4.2.*",
-    "ext-json": "*"
+    "symfony/yaml": "4.2.*"
   },
   "config": {
     "preferred-install": {
