@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route("/category", name="category_")
@@ -66,10 +67,17 @@ class CategoryController extends AbstractController
     /**
      * @Route(path="/{category}", name="delete", methods={"DELETE"})
      */
-    public function delete(Category $category): JsonResponse
+    public function delete(Category $category, TranslatorInterface $translator): JsonResponse
     {
         if ($category->getOwner() !== $this->getUser()) {
-            throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
+            throw new AccessDeniedHttpException(
+                $translator->trans(
+                    "The category %category% doesn't belong to you!",
+                    ['category' => $category->getName()],
+                    null,
+                    $this->getUser()->getLanguage()
+                )
+            );
         }
 
         $this->entityManager->remove($category);

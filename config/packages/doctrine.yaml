@@ -10,6 +10,10 @@ doctrine:
         charset: utf8mb4
         collate: utf8mb4_unicode_ci
       url: '%env(resolve:DATABASE_URL)%'
+      mapping_types:
+        enum: string
+      types:
+        language_enum: Safebeat\DBAL\LanguageEnum
     orm:
       auto_generate_proxy_classes: true
       naming_strategy: doctrine.orm.naming_strategy.underscore
