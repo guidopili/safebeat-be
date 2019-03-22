@@ -102,6 +102,11 @@ class Wallet extends BaseEntity
         return $this->invitedUsers->removeElement($user);
     }
 
+    public function hasInvitedUser(User $user): bool
+    {
+        return $this->invitedUsers->contains($user);
+    }
+
     public function __toString(): string
     {
         return $this->getTitle();

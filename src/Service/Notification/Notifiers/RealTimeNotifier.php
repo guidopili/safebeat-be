@@ -29,7 +29,7 @@ class RealTimeNotifier implements NotifierInterface
         return true;
     }
 
-    public function isSupportedBy(User $user): bool
+    public static function isSupportedBy(User $user): bool
     {
         return true;
     }

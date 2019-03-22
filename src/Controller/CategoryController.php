@@ -4,13 +4,12 @@ namespace Safebeat\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Safebeat\Entity\Category;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route("/category", name="category_")
@@ -36,6 +35,7 @@ class CategoryController extends AbstractController
 
     /**
      * @Route(path="/{category}", name="get", methods={"GET"})
+     * @IsGranted("CATEGORY_VIEW", subject="category", message="You are not authorized to see this category")
      */
     public function getCategory(Category $category): JsonResponse
     {
@@ -66,20 +66,10 @@ class CategoryController extends AbstractController
 
     /**
      * @Route(path="/{category}", name="delete", methods={"DELETE"})
+     * @IsGranted("CATEGORY_DELETE", subject="category")
      */
-    public function delete(Category $category, TranslatorInterface $translator): JsonResponse
+    public function delete(Category $category): JsonResponse
     {
-        if ($category->getOwner() !== $this->getUser()) {
-            throw new AccessDeniedHttpException(
-                $translator->trans(
-                    "The category %category% doesn't belong to you!",
-                    ['category' => $category->getName()],
-                    null,
-                    $this->getUser()->getLanguage()
-                )
-            );
-        }
-
         $this->entityManager->remove($category);
         $this->entityManager->flush();
 

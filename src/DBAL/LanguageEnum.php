@@ -21,6 +21,10 @@ class LanguageEnum extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
+        if (null === $value) {
+            return $value;
+        }
+
         if (false === self::validateValue($value)) {
             throw new \InvalidArgumentException("Invalid status");
         }

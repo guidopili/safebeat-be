@@ -1,27 +1,27 @@
 parameters:
-    env(DATABASE_URL): ''
+  env(DATABASE_URL): ''
 
 doctrine:
-    dbal:
-      driver: 'pdo_mysql'
-      server_version: '8.0'
+  dbal:
+    driver: 'pdo_mysql'
+    server_version: '8.0'
+    charset: utf8mb4
+    default_table_options:
       charset: utf8mb4
-      default_table_options:
-        charset: utf8mb4
-        collate: utf8mb4_unicode_ci
-      url: '%env(resolve:DATABASE_URL)%'
-      mapping_types:
-        enum: string
-      types:
-        language_enum: Safebeat\DBAL\LanguageEnum
-    orm:
-      auto_generate_proxy_classes: true
-      naming_strategy: doctrine.orm.naming_strategy.underscore
-      auto_mapping: true
-      mappings:
-        Safebeat:
-          is_bundle: false
-          type: annotation
-          dir: '%kernel.project_dir%/src/Entity'
-          prefix: 'Safebeat\Entity'
-          alias: Safebeat
+      collate: utf8mb4_unicode_ci
+    url: '%env(resolve:DATABASE_URL)%'
+    mapping_types:
+      enum: string
+    types:
+      language_enum: Safebeat\DBAL\LanguageEnum
+  orm:
+    auto_generate_proxy_classes: true
+    naming_strategy: doctrine.orm.naming_strategy.underscore
+    auto_mapping: true
+    mappings:
+      Safebeat:
+        is_bundle: false
+        type: annotation
+        dir: '%kernel.project_dir%/src/Entity'
+        prefix: 'Safebeat\Entity'
+        alias: Safebeat
