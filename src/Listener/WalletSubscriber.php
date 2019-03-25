@@ -6,9 +6,10 @@ use Safebeat\Entity\Notification;
 use Safebeat\Entity\User;
 use Safebeat\Event\WalletEvent;
 use Safebeat\Service\Notification\NotificationService;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class WalletListener
+class WalletSubscriber implements EventSubscriberInterface
 {
     private $notificationService;
     private $router;
@@ -71,5 +72,13 @@ class WalletListener
         $notification->setTargetUser($user);
 
         $this->notificationService->sendNotificationToUser($user, $notification);
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            WalletEvent::WALLET_REMOVED_USER => 'onWalletRemovedUser',
+            WalletEvent::WALLET_INVITED_USER => 'onWalletInvitedUser'
+        ];
     }
 }

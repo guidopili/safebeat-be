@@ -52,10 +52,9 @@ services:
       - { name: doctrine.event_listener, event: preUpdate }
       - { name: doctrine.event_listener, event: prePersist }
 
-  Safebeat\Listener\WalletListener:
-    tags:
-      - { name: kernel.event_listener, event: wallet.invited_user, method: onWalletInvitedUser }
-      - { name: kernel.event_listener, event: wallet.removed_user, method: onWalletRemovedUser }
+  Safebeat\Listener\ExceptionSubscriber:
+    arguments:
+      $env: '%kernel.environment%'
 
 #  Safebeat\Listener\RequestValidationListener:
 #    tags:

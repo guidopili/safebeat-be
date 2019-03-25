@@ -3,7 +3,6 @@
 namespace Safebeat\Listener;
 
 use Safebeat\Entity\User;
-use Safebeat\Kernel;
 use Safebeat\Service\UserMessageTranslator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,13 +16,13 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
     private $translator;
     private $tokenStorage;
-    private $kernel;
+    private $env;
 
-    public function __construct(UserMessageTranslator $translator, TokenStorageInterface $tokenStorage, Kernel $kernel)
+    public function __construct(UserMessageTranslator $translator, TokenStorageInterface $tokenStorage, string $env)
     {
         $this->translator = $translator;
         $this->tokenStorage = $tokenStorage;
-        $this->kernel = $kernel;
+        $this->env = $env;
     }
 
     public function onKernelException(GetResponseForExceptionEvent $event)
@@ -32,7 +31,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
         if (!$exception instanceof HttpException) {
 
-            if ($this->kernel->getEnvironment() === 'prod') {
+            if ($this->env === 'prod') {
                 $event->setResponse(
                     JsonResponse::create(['message' => 'Internal server error'], 500)
                 );
