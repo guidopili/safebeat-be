@@ -4,10 +4,10 @@ namespace Safebeat\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Safebeat\Entity\Category;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -35,6 +35,7 @@ class CategoryController extends AbstractController
 
     /**
      * @Route(path="/{category}", name="get", methods={"GET"})
+     * @IsGranted("CATEGORY_VIEW", subject="category")
      */
     public function getCategory(Category $category): JsonResponse
     {
@@ -65,13 +66,10 @@ class CategoryController extends AbstractController
 
     /**
      * @Route(path="/{category}", name="delete", methods={"DELETE"})
+     * @IsGranted("CATEGORY_DELETE", subject="category")
      */
     public function delete(Category $category): JsonResponse
     {
-        if ($category->getOwner() !== $this->getUser()) {
-            throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
-        }
-
         $this->entityManager->remove($category);
         $this->entityManager->flush();
 

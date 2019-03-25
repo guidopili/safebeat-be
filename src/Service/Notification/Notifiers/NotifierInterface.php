@@ -9,5 +9,5 @@ interface NotifierInterface
 {
     public function notify(User $user, Notification $notification): bool;
 
-    public function isSupportedBy(User $user): bool;
+    public static function isSupportedBy(User $user): bool;
 }

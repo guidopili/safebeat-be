@@ -41,6 +41,11 @@ class User extends BaseEntity implements UserInterface
      * @ORM\Column(name="last_name", nullable=true, type="string", length=50)
      */
     private $lastName;
+    /**
+     * @var string | null
+     * @ORM\Column(name="language", nullable=true, type="language_enum")
+     */
+    private $language;
 
     public function __construct(string $username, string $password)
     {
@@ -101,6 +106,16 @@ class User extends BaseEntity implements UserInterface
     public function setLastName(string $lastName): void
     {
         $this->lastName = $lastName;
+    }
+
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(string $language): void
+    {
+        $this->language = $language;
     }
 
     public function getSalt()

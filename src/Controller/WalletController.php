@@ -9,7 +9,9 @@ use Safebeat\Entity\Wallet;
 use Safebeat\Entity\WalletPendingInvitation;
 use Safebeat\Event\WalletEvent;
 use Safebeat\Repository\WalletRepository;
+use Safebeat\Service\WalletInvitationManager;
 use Safebeat\Service\WalletManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -41,6 +43,7 @@ class WalletController extends AbstractController
 
     /**
      * @Route(path="/{wallet}", name="get", methods={"GET"})
+     * @IsGranted("WALLET_VIEW", subject="wallet")
      */
     public function getWallet(Wallet $wallet): JsonResponse
     {
@@ -78,6 +81,7 @@ class WalletController extends AbstractController
 
     /**
      * @Route(path="/{wallet}", name="update", methods={"PUT"})
+     * @IsGranted("WALLET_EDIT", subject="wallet")
      */
     public function update(Request $request, Wallet $wallet, WalletManager $walletManager): JsonResponse
     {
@@ -92,13 +96,10 @@ class WalletController extends AbstractController
 
     /**
      * @Route(path="/invite-to/{wallet}", name="invite_to_wallet", methods={"POST"})
+     * @IsGranted("WALLET_EDIT", subject="wallet")
      */
-    public function inviteToWallet(Request $request, Wallet $wallet, WalletManager $walletManager): JsonResponse
+    public function inviteToWallet(Request $request, Wallet $wallet, WalletInvitationManager $walletManager): JsonResponse
     {
-        if ($wallet->getOwner() !== $this->getUser()) {
-            throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
-        }
-
         $invitedUsers = [];
         foreach ($request->request->get('users', []) as $userId) {
             $user = $this->entityManager->getRepository(User::class)->find($userId);
@@ -107,7 +108,7 @@ class WalletController extends AbstractController
                 continue;
             }
 
-            if (true === $walletManager->inviteUsers($wallet, $user)) {
+            if (true === $walletManager->inviteUser($wallet, $user)) {
                 $invitedUsers[] = $user->getUsername();
             }
         }
@@ -118,13 +119,10 @@ class WalletController extends AbstractController
     /**
      * @Route(path="/invite-to/{wallet}/accept", name="accept_invitation", methods={"POST"})
      */
-    public function acceptInvitation(Wallet $wallet, EventDispatcherInterface $eventDispatcher)
+    public function acceptInvitation(Wallet $wallet, EventDispatcherInterface $eventDispatcher, WalletInvitationManager $invitationManager)
     {
         $user = $this->getUser();
-        $pendingInvitation = $this
-            ->entityManager
-            ->getRepository(WalletPendingInvitation::class)
-            ->findOneBy(['user' => $user, 'wallet' => $wallet]);
+        $pendingInvitation = $invitationManager->getPendingInvitation($wallet, $user);
 
         if (!$pendingInvitation instanceof WalletPendingInvitation) {
             throw new PreconditionFailedHttpException("You were not invited to {$wallet}");
@@ -137,7 +135,7 @@ class WalletController extends AbstractController
             $this->entityManager->flush();
 
             $eventDispatcher->dispatch(
-                WalletEvent::WALLETD_INVITATION_ACCEPTED,
+                WalletEvent::WALLET_INVITATION_ACCEPTED,
                 new WalletEvent($wallet)
             );
 
@@ -155,13 +153,10 @@ class WalletController extends AbstractController
     /**
      * @Route(path="/invite-to/{wallet}/decline", name="decline_invitation", methods={"POST"})
      */
-    public function declineInvitation(Wallet $wallet, EventDispatcherInterface $eventDispatcher)
+    public function declineInvitation(Wallet $wallet, EventDispatcherInterface $eventDispatcher, WalletInvitationManager $invitationManager)
     {
         $user = $this->getUser();
-        $pendingInvitation = $this
-            ->entityManager
-            ->getRepository(WalletPendingInvitation::class)
-            ->findOneBy(['user' => $user, 'wallet' => $wallet]);
+        $pendingInvitation = $invitationManager->getPendingInvitation($wallet, $user);
 
         if (!$pendingInvitation instanceof WalletPendingInvitation) {
             throw new PreconditionFailedHttpException("You were not invited to {$wallet}");
@@ -172,10 +167,7 @@ class WalletController extends AbstractController
             $this->entityManager->remove($pendingInvitation);
             $this->entityManager->flush();
 
-            $eventDispatcher->dispatch(
-                WalletEvent::WALLETD_INVITATION_ACCEPTED,
-                new WalletEvent($wallet)
-            );
+            $eventDispatcher->dispatch(WalletEvent::WALLET_INVITATION_DECLINED, new WalletEvent($wallet));
 
             $this->entityManager->commit();
         } catch (\Throwable $e) {
@@ -190,24 +182,19 @@ class WalletController extends AbstractController
 
     /**
      * @Route(path="/invite-to/{wallet}", name="remove_from_wallet", methods={"DELETE"})
+     * @IsGranted("WALLET_EDIT", subject="wallet")
      */
-    public function removeFromWallet(Request $request, Wallet $wallet, WalletManager $walletManager): JsonResponse
+    public function removeFromWallet(Request $request, Wallet $wallet, WalletInvitationManager $invitationManager): JsonResponse
     {
-        if ($wallet->getOwner() !== $this->getUser()) {
-            throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
-        }
-
-        $userIds = $request->request->get('users', []);
-
         $removedUsers = [];
-        foreach ($userIds as $userId) {
+        foreach ($request->request->get('users', []) as $userId) {
             $user = $this->entityManager->getRepository(User::class)->find($userId);
 
             if (!$user instanceof User) {
                 continue;
             }
 
-            if (true === $walletManager->removeInvitedUser($wallet, $user)) {
+            if (true === $invitationManager->removeInvitedUser($wallet, $user)) {
                 $removedUsers[] = $user->getUsername();
             }
         }

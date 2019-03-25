@@ -28,7 +28,7 @@ class NotificationService
         $this->entityManager->flush();
 
         foreach ($this->notifiers as $notifier) {
-            if (!$notifier->isSupportedBy($user)) {
+            if (!$notifier::isSupportedBy($user)) {
                 continue;
             }
 

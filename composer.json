@@ -19,6 +19,7 @@
     "symfony/monolog-bundle": "^3.3",
     "symfony/orm-pack": "^1.0",
     "symfony/serializer": "4.2.*",
+    "symfony/translation": "4.2.*",
     "symfony/yaml": "4.2.*"
   },
   "config": {

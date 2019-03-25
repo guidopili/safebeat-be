@@ -5,6 +5,7 @@ namespace Safebeat\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use Safebeat\Entity\Notification;
 use Safebeat\Repository\NotificationRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +33,7 @@ class NotificationController extends AbstractController
 
     /**
      * @Route("/{notification}", name="mark_read", methods={"PUT"})
+     * @IsGranted("NOTIFICATION_EDIT", subject="notification")
      */
     public function markAsRead(Notification $notification, EntityManagerInterface $entityManager): JsonResponse
     {

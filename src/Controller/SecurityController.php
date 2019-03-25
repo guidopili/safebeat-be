@@ -11,6 +11,7 @@ use Safebeat\Exception\RefreshTokenException;
 use Safebeat\Model\RefreshTokenRequestModel;
 use Safebeat\Repository\RefreshTokenRepository;
 use Safebeat\Service\RefreshTokenManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -46,6 +47,7 @@ class SecurityController extends AbstractController
 
     /**
      * @Route("/health", name="health", methods={"GET"})
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function health(): JsonResponse
     {

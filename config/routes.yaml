@@ -1,3 +1,3 @@
 login_check:
-    path:     /api/login
-    methods:  [POST]
+  path:     /api/login
+  methods:  [POST]
