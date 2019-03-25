@@ -52,7 +52,6 @@ class WalletController extends AbstractController
 
     /**
      * @Route(name="create", methods={"POST"})
-     * @Annotation\RequestBodyValidator()
      */
     public function create(Request $request, WalletManager $walletManager): JsonResponse
     {
