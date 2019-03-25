@@ -3,6 +3,7 @@
 namespace Safebeat\Listener;
 
 use Safebeat\Entity\User;
+use Safebeat\Kernel;
 use Safebeat\Service\UserMessageTranslator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,11 +17,13 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
     private $translator;
     private $tokenStorage;
+    private $kernel;
 
-    public function __construct(UserMessageTranslator $translator, TokenStorageInterface $tokenStorage)
+    public function __construct(UserMessageTranslator $translator, TokenStorageInterface $tokenStorage, Kernel $kernel)
     {
         $this->translator = $translator;
         $this->tokenStorage = $tokenStorage;
+        $this->kernel = $kernel;
     }
 
     public function onKernelException(GetResponseForExceptionEvent $event)
@@ -28,9 +31,12 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $exception = $event->getException();
 
         if (!$exception instanceof HttpException) {
-            $event->setResponse(
-                JsonResponse::create(['message' => 'Internal server error'], 500)
-            );
+
+            if ($this->kernel->getEnvironment() === 'prod') {
+                $event->setResponse(
+                    JsonResponse::create(['message' => 'Internal server error'], 500)
+                );
+            }
 
             return;
         }
@@ -63,7 +69,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         }
 
         if (false !== strpos($message, self::ACCESS_DENIED_SECURITY_MESSAGE)) {
-            return 'You are not authorized to perform the action you requested';
+            return 'You are not authorized to work on the resource you requested';
         }
 
         return $message;

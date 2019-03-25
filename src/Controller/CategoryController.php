@@ -35,7 +35,7 @@ class CategoryController extends AbstractController
 
     /**
      * @Route(path="/{category}", name="get", methods={"GET"})
-     * @IsGranted("CATEGORY_VIEW", subject="category", message="You are not authorized to see this category")
+     * @IsGranted("CATEGORY_VIEW", subject="category")
      */
     public function getCategory(Category $category): JsonResponse
     {
