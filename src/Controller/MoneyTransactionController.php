@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Safebeat\Annotation\RequestBodyValidator;
+use Safebeat\Validator\{EmptyValidator, NumericValidator};
 
 /**
  * @Route("/transaction", name="transaction_")
@@ -59,28 +61,17 @@ class MoneyTransactionController extends AbstractController
 
     /**
      * @Route(name="create", methods={"POST"})
+     * @RequestBodyValidator(validators={
+     *     "description": EmptyValidator::class,
+     *     "amount": {EmptyValidator::class, NumericValidator::class}
+     * })
      */
-    public function create(
-        Request $request,
-        MoneyTransactionManager $transactionManager,
-        UserMessageTranslator $translator
-    ): JsonResponse {
+    public function create(Request $request, MoneyTransactionManager $transactionManager): JsonResponse
+    {
         $amount = $request->request->get('amount');
         $description = $request->request->get('description');
         $categoryId = $request->request->get('category');
         $walletId = $request->request->get('wallet');
-
-        if (!is_numeric($amount)) {
-            throw new BadRequestHttpException(
-                $translator->translateForUser($this->getUser(), 'Missing or not-well formed amount')
-            );
-        }
-
-        if (empty($description)) {
-            throw new BadRequestHttpException(
-                $translator->translateForUser($this->getUser(), 'Missing required title in body')
-            );
-        }
 
         if (is_numeric($categoryId)) {
             $category = $this->entityManager->find(Category::class, $categoryId);

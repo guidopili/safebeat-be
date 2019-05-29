@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class NotificationController extends AbstractController
 {
     /**
-     * @Route("/", name="list", methods={"GET"})
+     * @Route(name="list", methods={"GET"})
      */
     public function getAction(Request $request, NotificationRepository $notificationRepository): JsonResponse
     {

@@ -3,7 +3,7 @@
 namespace Safebeat\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Safebeat\Annotation;
+use Safebeat\Annotation\RequestBodyValidator;
 use Safebeat\Entity\User;
 use Safebeat\Entity\Wallet;
 use Safebeat\Entity\WalletPendingInvitation;
@@ -16,10 +16,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Safebeat\Validator\{EmptyValidator, NullStringValidator};
 
 /**
  * @Route("/wallet", name="wallet_")
@@ -52,29 +51,21 @@ class WalletController extends AbstractController
 
     /**
      * @Route(name="create", methods={"POST"})
+     * @RequestBodyValidator(validators={"title": {EmptyValidator::class, NullStringValidator::class}})
      */
     public function create(Request $request, WalletManager $walletManager): JsonResponse
     {
-        $title = $request->request->get('title');
-
-        if (empty($title)) {
-            throw new BadRequestHttpException('Missing required title in body');
-        }
-
-        $wallet = $walletManager->create($title, $this->getUser());
+        $wallet = $walletManager->create($request->request->get('title'), $this->getUser());
 
         return JsonResponse::create(['wallet' => $wallet], 201);
     }
 
     /**
      * @Route(path="/{wallet}", name="delete", methods={"DELETE"})
+     * @IsGranted("WALLET_DELETE", subject="wallet")
      */
     public function delete(Wallet $wallet, WalletManager $walletManager): JsonResponse
     {
-        if ($wallet->getOwner() !== $this->getUser()) {
-            throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
-        }
-
         return JsonResponse::create(['deleted' => $walletManager->delete($wallet)]);
     }
 
@@ -84,13 +75,7 @@ class WalletController extends AbstractController
      */
     public function update(Request $request, Wallet $wallet, WalletManager $walletManager): JsonResponse
     {
-        if ($wallet->getOwner() !== $this->getUser()) {
-            throw new AccessDeniedHttpException('This wallet doesn\'t belong to you!');
-        }
-
-        $updatedWallet = $walletManager->update($wallet, $request->request->all());
-
-        return JsonResponse::create(['wallet' => $updatedWallet]);
+        return JsonResponse::create(['wallet' => $walletManager->update($wallet, $request->request->all())]);
     }
 
     /**
