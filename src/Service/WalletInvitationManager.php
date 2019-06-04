@@ -41,6 +41,8 @@ class WalletInvitationManager
                 WalletEvent::WALLET_INVITED_USER,
                 new WalletEvent($wallet, ['invitedUser' => $user])
             );
+
+            $this->entityManager->commit();
         } catch (\Throwable $e) {
             $this->entityManager->rollback();
             $this->entityManager->close();
@@ -74,6 +76,8 @@ class WalletInvitationManager
                         ]
                     )
                 );
+
+                $this->entityManager->commit();
             } catch (\Throwable $e) {
                 $this->entityManager->rollback();
                 $this->entityManager->close();
@@ -105,6 +109,7 @@ class WalletInvitationManager
                 )
             );
 
+            $this->entityManager->commit();
         } catch (\Throwable $e) {
             $this->entityManager->rollback();
             $this->entityManager->close();

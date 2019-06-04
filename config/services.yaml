@@ -16,6 +16,10 @@ services:
     resource: '../src/Controller'
     tags: ['controller.service_arguments']
 
+  Safebeat\Controller\NotificationController:
+    arguments:
+      $mercureHub: '%mercure.default_hub%'
+
   # Doctrine Repositories
   Safebeat\Repository\RefreshTokenRepository:
     class: Doctrine\ORM\EntityRepository
