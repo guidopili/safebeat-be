@@ -10,7 +10,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -51,10 +50,6 @@ class CategoryController extends AbstractController
     public function create(Request $request): JsonResponse
     {
         $name = $request->request->get('name');
-
-        if (empty($name)) {
-            throw new BadRequestHttpException('Missing required name in body');
-        }
 
         $category = new Category();
 
