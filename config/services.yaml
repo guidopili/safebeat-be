@@ -55,7 +55,3 @@ services:
   Safebeat\Listener\ExceptionSubscriber:
     arguments:
       $env: '%kernel.environment%'
-
-#  Safebeat\Listener\RequestValidationListener:
-#    tags:
-#      - { name: kernel.event_listener, event: kernel.controller, method: log }

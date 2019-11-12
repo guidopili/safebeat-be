@@ -19,6 +19,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Safebeat\Validator\{EmptyValidator, PasswordValidator};
+use Safebeat\Annotation\RequestBodyValidator;
 
 class SecurityController extends AbstractController
 {
@@ -31,6 +33,10 @@ class SecurityController extends AbstractController
 
     /**
      * @Route("/register", name="register", methods={"POST"})
+     * @RequestBodyValidator(validators={
+     *     "username": EmptyValidator::class,
+     *     "password": {EmptyValidator::class, PasswordValidator::class}
+     * })
      */
     public function register(Request $request, EncoderFactoryInterface $encoder): JsonResponse
     {

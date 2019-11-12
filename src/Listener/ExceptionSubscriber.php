@@ -81,6 +81,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
         }
 
         $params['%EntityName%'] = $matches[1] ?? '';
-        return '%EntityName% not found';
+        return strtr('%EntityName% not found', $params);
     }
 }
