@@ -218,6 +218,9 @@
             "ref": "c78ab1f56e700004fc5cd675c26b3c1c26be281d"
         }
     },
+    "symfony/mime": {
+        "version": "v4.3.7"
+    },
     "symfony/monolog-bridge": {
         "version": "v4.2.1"
     },
@@ -233,8 +236,14 @@
     "symfony/orm-pack": {
         "version": "v1.0.5"
     },
+    "symfony/polyfill-intl-idn": {
+        "version": "v1.12.0"
+    },
     "symfony/polyfill-mbstring": {
         "version": "v1.10.0"
+    },
+    "symfony/polyfill-php72": {
+        "version": "v1.12.0"
     },
     "symfony/polyfill-php73": {
         "version": "v1.12.0"
