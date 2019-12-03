@@ -1,26 +1,27 @@
 {
-  "type": "Safebeat-be",
+  "name": "safebeat/api-project",
+  "type": "project",
   "license": "proprietary",
   "require": {
-    "php": "^7.3",
+    "php": "^7.4",
     "ext-ctype": "*",
     "ext-iconv": "*",
     "ext-json": "*",
-    "friendsofsymfony/rest-bundle": "^2.4",
+    "friendsofsymfony/rest-bundle": "^2.6",
     "lexik/jwt-authentication-bundle": "^2.6",
-    "nelmio/cors-bundle": "^1.5",
-    "sensio/framework-extra-bundle": "^5.2",
-    "symfony/console": "4.2.*",
-    "symfony/dotenv": "4.2.*",
-    "symfony/event-dispatcher": "4.2.*",
-    "symfony/flex": "^1.1",
-    "symfony/framework-bundle": "4.2.*",
-    "symfony/mercure-bundle": "^0.1.1",
-    "symfony/monolog-bundle": "^3.3",
+    "nelmio/cors-bundle": "^2.0",
+    "sensio/framework-extra-bundle": "^5.5",
+    "symfony/console": "4.3.*",
+    "symfony/dotenv": "4.3.*",
+    "symfony/event-dispatcher": "4.3.*",
+    "symfony/flex": "^1.5",
+    "symfony/framework-bundle": "4.3.*",
+    "symfony/mercure-bundle": "^0.2",
+    "symfony/monolog-bundle": "^3.5",
     "symfony/orm-pack": "^1.0",
-    "symfony/serializer": "4.2.*",
-    "symfony/translation": "4.2.*",
-    "symfony/yaml": "4.2.*"
+    "symfony/serializer": "4.3.*",
+    "symfony/translation": "4.3.*",
+    "symfony/yaml": "4.3.*"
   },
   "config": {
     "preferred-install": {
@@ -64,7 +65,7 @@
   "extra": {
     "symfony": {
       "allow-contrib": true,
-      "require": "4.2.*"
+      "require": "4.3.*"
     }
   }
 }
