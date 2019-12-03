@@ -7,12 +7,10 @@
     "ext-ctype": "*",
     "ext-iconv": "*",
     "ext-json": "*",
-    "friendsofsymfony/rest-bundle": "^2.6",
     "lexik/jwt-authentication-bundle": "^2.6",
     "nelmio/cors-bundle": "^2.0",
     "sensio/framework-extra-bundle": "^5.5",
     "symfony/console": "4.3.*",
-    "symfony/dotenv": "4.3.*",
     "symfony/event-dispatcher": "4.3.*",
     "symfony/flex": "^1.5",
     "symfony/framework-bundle": "4.3.*",
@@ -22,6 +20,10 @@
     "symfony/serializer": "4.3.*",
     "symfony/translation": "4.3.*",
     "symfony/yaml": "4.3.*"
+  },
+  "require-dev": {
+    "symfony/dotenv": "4.3.*",
+    "deployer/deployer": "^6.6"
   },
   "config": {
     "preferred-install": {
@@ -67,8 +69,5 @@
       "allow-contrib": true,
       "require": "4.3.*"
     }
-  },
-  "require-dev": {
-    "deployer/deployer": "^6.6"
   }
 }
