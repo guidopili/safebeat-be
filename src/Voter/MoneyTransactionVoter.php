@@ -5,10 +5,8 @@ namespace Safebeat\Voter;
 use Safebeat\Entity\MoneyTransaction;
 use Safebeat\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\Security;
 
-class MoneyTransactionVoter extends Voter
+class MoneyTransactionVoter extends AbstractVoter
 {
     private const ATTRIBUTE_VIEW = 'TRANSACTION_VIEW';
     private const ATTRIBUTE_EDIT = 'TRANSACTION_EDIT';
@@ -20,13 +18,6 @@ class MoneyTransactionVoter extends Voter
         self::ATTRIBUTE_DELETE,
     ];
 
-    private $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
-    }
-
     protected function supports($attribute, $subject): bool
     {
         return $subject instanceof MoneyTransaction && in_array($attribute, self::SUPPORTED_ATTRIBUTES, true);
@@ -34,14 +25,10 @@ class MoneyTransactionVoter extends Voter
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
-        $user = $token->getUser();
+        [$user, $ret] = $this->commonChecks($token);
 
-        if (!$user instanceof User) {
-            return false;
-        }
-
-        if ($this->security->isGranted('ROLE_SUPER_ADMIN')) {
-            return true;
+        if (null !== $ret) {
+            return $ret;
         }
 
         switch ($attribute) {

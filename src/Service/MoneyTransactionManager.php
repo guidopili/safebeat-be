@@ -13,8 +13,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MoneyTransactionManager
 {
-    private $entityManager;
-    private $eventDispatcher;
+    private EntityManagerInterface $entityManager;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(EntityManagerInterface $entityManager, EventDispatcherInterface $eventDispatcher)
     {

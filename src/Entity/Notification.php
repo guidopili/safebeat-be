@@ -11,35 +11,30 @@ use Doctrine\ORM\Mapping as ORM;
 class Notification extends BaseEntity
 {
     /**
-     * @var boolean
      * @ORM\Column(name="is_read", type="boolean", nullable=false)
      */
-    private $read;
+    private bool $read;
 
     /**
-     * @var string
      * @ORM\Column(name="content", type="string", nullable=false)
      */
-    private $content;
+    private string $content;
 
     /**
-     * @var string
      * @ORM\Column(name="title", type="string", nullable=false)
      */
-    private $title;
+    private string $title;
 
     /**
-     * @var array
      * @ORM\Column(name="links", type="json", nullable=false)
      */
-    private $links;
+    private array $links;
 
     /**
-     * @var User
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
-    private $targetUser;
+    private User $targetUser;
 
     public function __construct()
     {

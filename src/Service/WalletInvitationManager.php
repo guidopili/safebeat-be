@@ -3,15 +3,16 @@
 namespace Safebeat\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Safebeat\Repository\WalletPendingInvitationRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Safebeat\Event\WalletEvent;
 use Safebeat\Entity\{User, Wallet, WalletPendingInvitation};
 
 class WalletInvitationManager
 {
-    private $entityManager;
-    private $eventDispatcher;
-    private $pendingInvitationRepository;
+    private EntityManagerInterface $entityManager;
+    private EventDispatcherInterface $eventDispatcher;
+    private WalletPendingInvitationRepository $pendingInvitationRepository;
 
     public function __construct(EntityManagerInterface $entityManager, EventDispatcherInterface $eventDispatcher)
     {

@@ -8,6 +8,7 @@ use Safebeat\Service\Serializer\Serializers;
 abstract class BaseEntity implements \JsonSerializable
 {
     /**
+     * @var int
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")

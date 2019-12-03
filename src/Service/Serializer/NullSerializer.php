@@ -9,7 +9,7 @@ class NullSerializer implements SerializeInterface
         return $object === null;
     }
 
-    public static function processValue($object)
+    public static function processValue($object): string
     {
         if (null !== $object) {
             throw new \LogicException('Call support before');

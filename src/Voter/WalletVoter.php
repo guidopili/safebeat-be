@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
 
-class WalletVoter extends Voter
+class WalletVoter extends AbstractVoter
 {
     private const ATTRIBUTE_VIEW = 'WALLET_VIEW';
     private const ATTRIBUTE_EDIT = 'WALLET_EDIT';
@@ -20,13 +20,6 @@ class WalletVoter extends Voter
         self::ATTRIBUTE_DELETE,
     ];
 
-    private $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
-    }
-
     protected function supports($attribute, $subject): bool
     {
         return $subject instanceof Wallet && in_array($attribute, self::SUPPORTED_ATTRIBUTES, true);
@@ -34,14 +27,10 @@ class WalletVoter extends Voter
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
-        $user = $token->getUser();
+        [$user, $ret] = $this->commonChecks($token);
 
-        if (!$user instanceof User) {
-            return false;
-        }
-
-        if ($this->security->isGranted('ROLE_SUPER_ADMIN')) {
-            return true;
+        if (null !== $ret) {
+            return $ret;
         }
 
         switch ($attribute) {

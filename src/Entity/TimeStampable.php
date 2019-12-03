@@ -7,16 +7,14 @@ use Doctrine\ORM\Mapping as ORM;
 trait TimeStampable
 {
     /**
-     * @var \Datetime|null
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
-    protected $updatedAt;
+    protected ?\DateTime $updatedAt = null;
 
     /**
-     * @var \Datetime | null
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
-    protected $createdAt;
+    protected ?\DateTime $createdAt = null;
 
     public function getUpdatedAt(): ?\Datetime
     {

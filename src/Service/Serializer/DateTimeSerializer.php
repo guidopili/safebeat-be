@@ -9,7 +9,7 @@ class DateTimeSerializer implements SerializeInterface
         return $object instanceof \DateTime;
     }
 
-    public static function processValue($object)
+    public static function processValue($object): string
     {
         if (! $object instanceof \DateTime ) {
             throw new \LogicException('Call support before');

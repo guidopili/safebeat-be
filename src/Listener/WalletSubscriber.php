@@ -11,8 +11,8 @@ use Symfony\Component\Routing\RouterInterface;
 
 class WalletSubscriber implements EventSubscriberInterface
 {
-    private $notificationService;
-    private $router;
+    private NotificationService $notificationService;
+    private RouterInterface $router;
 
     public function __construct(NotificationService $notificationService, RouterInterface $router)
     {
@@ -20,7 +20,7 @@ class WalletSubscriber implements EventSubscriberInterface
         $this->router = $router;
     }
 
-    public function onWalletInvitedUser(WalletEvent $event)
+    public function onWalletInvitedUser(WalletEvent $event): void
     {
         if (false === $event->hasArgument('invitedUser')) {
             return;
@@ -52,7 +52,7 @@ class WalletSubscriber implements EventSubscriberInterface
         $this->notificationService->sendNotificationToUser($user, $notification);
     }
 
-    public function onWalletRemovedUser(WalletEvent $event)
+    public function onWalletRemovedUser(WalletEvent $event): void
     {
         $requiredKeys = ['removedUser', 'notificationTitle', 'notificationContent'];
         if (!empty(array_diff($requiredKeys, array_keys($event->getArguments())))) {
@@ -74,7 +74,7 @@ class WalletSubscriber implements EventSubscriberInterface
         $this->notificationService->sendNotificationToUser($user, $notification);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             WalletEvent::WALLET_REMOVED_USER => 'onWalletRemovedUser',

@@ -12,40 +12,33 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User extends BaseEntity implements UserInterface
 {
     /**
-     * @var string
      * @ORM\Column(name="password", nullable=false, type="string", length=100)
      */
-    private $password;
+    private string $password;
     /**
-     * @var string
      * @ORM\Column(name="username", nullable=false, type="string", length=50, unique=true)
      */
-    private $username;
+    private string $username;
     /**
-     * @var string
      * @ORM\Column(name="roles", nullable=false, type="simple_array")
      */
-    private $roles;
+    private array $roles;
     /**
-     * @var string
      * @ORM\Column(name="email", nullable=true, type="string")
      */
-    private $email;
+    private ?string $email = null;
     /**
-     * @var string | null
      * @ORM\Column(name="first_name", nullable=true, type="string", length=50)
      */
-    private $firstName;
+    private ?string $firstName = null;
     /**
-     * @var string | null
      * @ORM\Column(name="last_name", nullable=true, type="string", length=50)
      */
-    private $lastName;
+    private ?string $lastName = null;
     /**
-     * @var string | null
      * @ORM\Column(name="language", nullable=true, type="language_enum")
      */
-    private $language;
+    private ?string $language = null;
 
     public function __construct(string $username, string $password)
     {

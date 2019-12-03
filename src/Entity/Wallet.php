@@ -14,26 +14,22 @@ class Wallet extends BaseEntity
     use TimeStampable;
 
     /**
-     * @var string
      * @ORM\Column(name="title", type="string", length=50, nullable=false, unique=true)
      */
-    private $title;
+    private string $title;
 
     /**
-     * @var User
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
-    private $owner;
+    private User $owner;
 
     /**
-     * @var bool
      * @ORM\Column(name="deleted", type="boolean", nullable=false, options={"default"=0})
      */
-    private $deleted;
+    private bool $deleted;
 
     /**
-     * @var Collection
      * @ORM\ManyToMany(targetEntity="User", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="wallet_invited_user",
      *   joinColumns={
@@ -44,7 +40,7 @@ class Wallet extends BaseEntity
      *   }
      * )
      */
-    private $invitedUsers;
+    private Collection $invitedUsers;
 
     public function __construct()
     {

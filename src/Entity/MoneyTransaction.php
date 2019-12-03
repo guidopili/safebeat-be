@@ -13,33 +13,28 @@ class MoneyTransaction extends BaseEntity
     use TimeStampable;
 
     /**
-     * @var float
      * @ORM\Column(name="amount", type="float", nullable=false)
      */
-    private $amount;
+    private float $amount;
     /**
-     * @var string
      * @ORM\Column(name="description", type="string", length=80, nullable=false)
      */
-    private $description;
+    private string $description;
     /**
-     * @var Category | null
      * @ORM\ManyToOne(targetEntity="Category")
      * @ORM\JoinColumn(onDelete="SET NULL")
      */
-    private $category;
+    private ?Category $category = null;
     /**
-     * @var User
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
-    private $owner;
+    private User $owner;
     /**
-     * @var Wallet | null
      * @ORM\ManyToOne(targetEntity="Wallet")
      * @ORM\JoinColumn(onDelete="SET NULL", nullable=true)
      */
-    private $wallet;
+    private ?Wallet $wallet = null;
 
     public function __construct()
     {

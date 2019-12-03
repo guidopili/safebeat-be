@@ -13,17 +13,15 @@ class Category extends BaseEntity
     use TimeStampable;
 
     /**
-     * @var string
      * @ORM\Column(name="name", type="string", length=25, nullable=false, unique=true)
      */
-    private $name;
+    private string $name;
 
     /**
-     * @var User
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(onDelete="SET NULL")
      */
-    private $owner;
+    private User $owner;
 
     public function getName(): string
     {

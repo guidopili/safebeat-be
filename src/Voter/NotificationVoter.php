@@ -8,20 +8,13 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
 
-class NotificationVoter extends Voter
+class NotificationVoter extends AbstractVoter
 {
     private const ATTRIBUTE_EDIT = 'NOTIFICATION_EDIT';
 
     private const SUPPORTED_ATTRIBUTES = [
         self::ATTRIBUTE_EDIT,
     ];
-
-    private $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
-    }
 
     protected function supports($attribute, $subject): bool
     {
@@ -30,14 +23,10 @@ class NotificationVoter extends Voter
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
-        $user = $token->getUser();
+        [$user, $ret] = $this->commonChecks($token);
 
-        if (!$user instanceof User) {
-            return false;
-        }
-
-        if ($this->security->isGranted('ROLE_SUPER_ADMIN')) {
-            return true;
+        if (null !== $ret) {
+            return $ret;
         }
 
         switch ($attribute) {

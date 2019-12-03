@@ -10,8 +10,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class WalletManager
 {
-    private $entityManager;
-    private $eventDispatcher;
+    private EntityManagerInterface $entityManager;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(EntityManagerInterface $entityManager, EventDispatcherInterface $eventDispatcher)
     {

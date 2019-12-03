@@ -13,8 +13,8 @@ class NotificationService
     /**
      * @var NotifierInterface[]
      */
-    private $notifiers;
-    private $entityManager;
+    private array $notifiers;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager, RealTimeNotifier $notifier)
     {
@@ -22,7 +22,7 @@ class NotificationService
         $this->notifiers = [$notifier];
     }
 
-    public function sendNotificationToUser(User $user, Notification $notification)
+    public function sendNotificationToUser(User $user, Notification $notification): void
     {
         $this->entityManager->persist($notification);
         $this->entityManager->flush();

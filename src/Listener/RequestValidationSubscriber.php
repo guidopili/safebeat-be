@@ -7,14 +7,14 @@ use Psr\Log\LoggerInterface;
 use Safebeat\Annotation\RequestBodyValidator;
 use Safebeat\Validator\ValidatorInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class RequestValidationSubscriber implements EventSubscriberInterface
 {
-    private $logger;
-    private $annotationReader;
+    private LoggerInterface $logger;
+    private AnnotationReader $annotationReader;
 
     public function __construct(LoggerInterface $logger)
     {
@@ -22,7 +22,7 @@ class RequestValidationSubscriber implements EventSubscriberInterface
         $this->annotationReader = new AnnotationReader();
     }
 
-    public function validateRequestBody(FilterControllerEvent $event)
+    public function validateRequestBody(ControllerEvent $event)
     {
         if (!is_array($event->getController())) {
             return;

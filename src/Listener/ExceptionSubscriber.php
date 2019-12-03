@@ -6,7 +6,9 @@ use Safebeat\Entity\User;
 use Safebeat\Service\UserMessageTranslator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\{KernelEvents, Exception\HttpException, Event\GetResponseForExceptionEvent};
+use Symfony\Component\HttpKernel\{Event\ExceptionEvent,
+    KernelEvents,
+    Exception\HttpException};
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ExceptionSubscriber implements EventSubscriberInterface
@@ -14,9 +16,9 @@ class ExceptionSubscriber implements EventSubscriberInterface
     private const PARAM_CONVERTER_NOT_FOUND_MESSAGE = 'object not found by the @ParamConverter annotation.';
     private const ACCESS_DENIED_SECURITY_MESSAGE = 'Access Denied by controller annotation ';
 
-    private $translator;
-    private $tokenStorage;
-    private $env;
+    private UserMessageTranslator $translator;
+    private TokenStorageInterface $tokenStorage;
+    private string $env;
 
     public function __construct(UserMessageTranslator $translator, TokenStorageInterface $tokenStorage, string $env)
     {
@@ -25,7 +27,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $this->env = $env;
     }
 
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
         $exception = $event->getException();
 
