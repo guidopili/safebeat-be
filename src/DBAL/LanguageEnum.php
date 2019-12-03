@@ -9,7 +9,7 @@ class LanguageEnum extends Type
 {
     private const ALLOWED_LANGUAGES = ['en', 'it', 'fr'];
 
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return sprintf("ENUM('%s')", implode("','", self::ALLOWED_LANGUAGES));
     }
@@ -32,12 +32,12 @@ class LanguageEnum extends Type
         return $value;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'language_enum';
     }
 
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;
     }

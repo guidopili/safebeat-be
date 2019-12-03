@@ -8,14 +8,14 @@ use Safebeat\Entity\TimeStampable;
 
 class TimeStampableListener
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    public function prePersist(LifecycleEventArgs $eventArgs)
+    public function prePersist(LifecycleEventArgs $eventArgs): void
     {
         $entity = $eventArgs->getObject();
 
@@ -26,7 +26,7 @@ class TimeStampableListener
         $entity->setCreatedAt(new \DateTime());
     }
 
-    public function preUpdate(LifecycleEventArgs $eventArgs)
+    public function preUpdate(LifecycleEventArgs $eventArgs): void
     {
         $entity = $eventArgs->getObject();
 

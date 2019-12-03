@@ -7,5 +7,5 @@ namespace Safebeat\Annotation;
  */
 class RequestBodyValidator
 {
-    public $validators = [];
+    public array $validators = [];
 }

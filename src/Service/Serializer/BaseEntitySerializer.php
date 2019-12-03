@@ -12,7 +12,7 @@ class BaseEntitySerializer implements SerializeInterface
         return $object instanceof BaseEntity && false === strrpos(get_class($object), '\\'.Proxy::MARKER.'\\');;
     }
 
-    public static function processValue($object)
+    public static function processValue($object): array
     {
         if (! $object instanceof BaseEntity) {
             throw new \LogicException('Call support first');

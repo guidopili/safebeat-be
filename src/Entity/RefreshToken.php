@@ -11,15 +11,14 @@ use Doctrine\ORM\Mapping as ORM;
 final class RefreshToken extends BaseEntity
 {
     /**
-     * @var User
      * @ORM\ManyToOne(targetEntity="User")
      */
-    private $user;
+    private User $user;
     /**
      * @var string
      * @ORM\Column(name="refresh_token", type="string")
      */
-    private $refreshToken;
+    private string $refreshToken;
 
     public function __construct(User $user, string $refreshToken)
     {

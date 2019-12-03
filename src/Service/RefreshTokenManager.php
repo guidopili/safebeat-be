@@ -9,7 +9,7 @@ use Safebeat\Model\RefreshTokenRequestModel;
 
 class RefreshTokenManager
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {

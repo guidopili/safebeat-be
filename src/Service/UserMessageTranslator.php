@@ -8,8 +8,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserMessageTranslator
 {
-    private $translator;
-    private $logger;
+    private TranslatorInterface $translator;
+    private LoggerInterface $logger;
 
     public function __construct(TranslatorInterface $translator, LoggerInterface $logger)
     {

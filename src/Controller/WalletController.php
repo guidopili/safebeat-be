@@ -25,7 +25,7 @@ use Safebeat\Validator\{EmptyValidator, NullStringValidator};
  */
 class WalletController extends AbstractController
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {

@@ -11,7 +11,7 @@ class CollectionSerializer implements SerializeInterface
         return $object instanceof Collection;
     }
 
-    public static function processValue($object)
+    public static function processValue($object): array
     {
         if (! $object instanceof Collection) {
             throw new \LogicException('Call support before');

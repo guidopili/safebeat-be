@@ -10,7 +10,7 @@ use Symfony\Component\Mercure\Update;
 
 class RealTimeNotifier implements NotifierInterface
 {
-    private $publisher;
+    private Publisher $publisher;
 
     public function __construct(Publisher $publisher)
     {

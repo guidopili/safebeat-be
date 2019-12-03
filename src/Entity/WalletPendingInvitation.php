@@ -18,18 +18,16 @@ class WalletPendingInvitation extends BaseEntity
     use TimeStampable;
 
     /**
-     * @var Wallet
      * @ORM\ManyToOne(targetEntity="Wallet")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
-    private $wallet;
+    private Wallet $wallet;
 
     /**
-     * @var User
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
-    private $user;
+    private User $user;
 
     public function __construct(Wallet $wallet, User $user)
     {

@@ -5,10 +5,8 @@ namespace Safebeat\Voter;
 use Safebeat\Entity\Category;
 use Safebeat\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\Security;
 
-class CategoryVoter extends Voter
+class CategoryVoter extends AbstractVoter
 {
     private const ATTRIBUTE_VIEW = 'CATEGORY_VIEW';
     private const ATTRIBUTE_DELETE = 'CATEGORY_DELETE';
@@ -18,13 +16,6 @@ class CategoryVoter extends Voter
         self::ATTRIBUTE_DELETE,
     ];
 
-    private $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
-    }
-
     protected function supports($attribute, $subject): bool
     {
         return $subject instanceof Category && in_array($attribute, self::SUPPORTED_ATTRIBUTES, true);
@@ -32,14 +23,10 @@ class CategoryVoter extends Voter
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
-        $user = $token->getUser();
+        [$user, $ret] = $this->commonChecks($token);
 
-        if (!$user instanceof User) {
-            return false;
-        }
-
-        if ($this->security->isGranted('ROLE_SUPER_ADMIN')) {
-            return true;
+        if (null !== $ret) {
+            return $ret;
         }
 
         switch ($attribute) {

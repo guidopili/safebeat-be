@@ -7,9 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class RefreshTokenRequestModel
 {
-    private $device;
-    private $browser;
-    private $osVersion;
+    private string $device;
+    private string $browser;
+    private string $osVersion;
 
     private function __construct(string $device, string $browser, string $osVersion)
     {
@@ -32,7 +32,7 @@ class RefreshTokenRequestModel
     }
 
 
-    public function __toString()
+    public function __toString(): string
     {
         return base64_encode("data:{device:{$this->device};browser:{$this->browser};osVersion:{$this->osVersion}}");
     }
