@@ -67,5 +67,8 @@
       "allow-contrib": true,
       "require": "4.3.*"
     }
+  },
+  "require-dev": {
+    "deployer/deployer": "^6.6"
   }
 }

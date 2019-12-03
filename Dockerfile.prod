@@ -1,0 +1,20 @@
+FROM guidopili/safebeat-be-php:latest
+
+COPY ./ /var/www/safebeat-be
+
+RUN rm -rf \
+    /var/www/safebeat-be/config/**/dev \
+    /var/www/safebeat-be/config/**/test \
+    /var/www/safebeat-be/config/jwt/* \
+    /var/www/safebeat-be/docker* \
+    /var/www/safebeat-be/.env \
+    /var/www/safebeat-be/.git* \
+    /var/www/safebeat-be/Makefile \
+    /var/www/safebeat-be/*.lock \
+    /var/www/safebeat-be/var/* \
+    /var/www/safebeat-be/vendor \
+    /var/www/safebeat-be/LICENSE
+
+RUN composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --no-suggest --optimize-autoloader
+RUN openssl genpkey -algorithm RSA -out /var/www/safebeat-be/config/jwt/private.pem -pkeyopt rsa_keygen_bits:2048
+RUN openssl rsa -in /var/www/safebeat-be/config/jwt/private.pem -outform PEM -pubout -out /var/www/safebeat-be/config/jwt/public.pem

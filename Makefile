@@ -12,3 +12,6 @@ start: up
 
 exec:
 	docker-compose exec fpm zsh
+
+build:
+	docker build -t guidopili/safebeat-be-php:prod -f Dockerfile.prod .
