@@ -1,5 +1,5 @@
 {
-  "type": "Safebeat-be",
+  "type": "project",
   "license": "proprietary",
   "require": {
     "php": "^7.3",

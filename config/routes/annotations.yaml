@@ -1,5 +1,4 @@
 controllers:
   prefix: /api
-  trailing_slash_on_root: false
   resource: ../../src/Controller/
   type: annotation
